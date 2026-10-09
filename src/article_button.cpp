@@ -37,8 +37,10 @@ void ArticleButton::setup_ui()
     set_name(m_css_id);
     add_css_class("article-button");
 
-    // Standardgröße für Touch-/POS-Bedienung
-    set_size_request(240, 115);
+    // Standardgröße für Touch-/POS-Bedienung in der 4x5 Matrix
+    set_size_request(130, 70);
+    set_hexpand(true);
+    set_vexpand(true);
 
     // Eigener CSS-Provider für instanzspezifische Farb- und Stilregeln
     m_css_provider = Gtk::CssProvider::create();

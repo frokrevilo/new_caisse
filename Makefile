@@ -7,7 +7,7 @@ GTKMM_LIBS := $(shell pkg-config --libs gtkmm-4.0 2>/dev/null)
 
 TARGET := caisse
 BUILD_DIR := build
-SRCS := src/main.cpp src/main_window.cpp src/article_button.cpp
+SRCS := src/main.cpp src/main_window.cpp src/article_button.cpp src/article_config.cpp src/cash_input_dialog.cpp
 OBJS := $(patsubst src/%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
 DEPS := $(OBJS:.o=.d)
 

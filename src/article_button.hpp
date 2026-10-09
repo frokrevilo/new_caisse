@@ -85,9 +85,9 @@ private:
     Glib::ustring m_css_id;
 
     // Standard-Schriftgrößen (hier anpassbar)
-    Glib::ustring m_article_font_size{"24pt"}; // Artikelbeschriftung
-    Glib::ustring m_price_font_size{"12pt"};    // Preisbeschriftung
-    Glib::ustring m_amount_font_size{"12pt"};   // Klickzähler-Badge
+    Glib::ustring m_article_font_size{"16pt"}; // Artikelbeschriftung
+    Glib::ustring m_price_font_size{"11pt"};    // Preisbeschriftung
+    Glib::ustring m_amount_font_size{"11pt"};   // Klickzähler-Badge
 
     // Langer Druck
     unsigned int m_long_press_duration_ms{2000};

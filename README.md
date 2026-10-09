@@ -1,48 +1,69 @@
-# Caisse (C++ / gtkmm-4.0)
+# Caisse (C++20 / gtkmm-4.0 POS Kassensystem)
 
-Einfache dialogbasierte GTK-Applikation in modernem C++ (C++20) mit `gtkmm-4.0`.
+Ein modernes, touch-optimiertes Point-of-Sale (POS) Kassensystem in C++20 mit `gtkmm-4.0`.
+
+## Features
+
+- **4×5 Artikel-Matrix (linke Seite — 3/4 des Platzes):**
+  - Bis zu 20 konfigurierbare Artikel-Buttons im flexiblen Raster.
+  - Vollständig anpassbar über [`articles.yaml`](file:///home/oliver/Development/c++/gtk/caisse/articles.yaml).
+  - Unterstützt `artikelname`, `artikelpreis`, `farbe`, `sichtbarkeit` und `position (x, y)`.
+  - Schlagschatten mit taktilem 3D-Klick-Effekt (`box-shadow`, `translateY(3px)`).
+  - Klickzähler-Badge auf jedem Button.
+  - Langer Tastendruck (>3s) setzt den Zähler für den jeweiligen Artikel auf `0` zurück.
+- **Kassenübersicht & Abrechnung (rechte Seite — 1/4 des Platzes):**
+  - Große, gut lesbare Schriftarten für Touch- und Kassendisplays.
+  - **Gesamtpreis:** Summiert automatisch alle ausgewählten Artikel in extragroßer Schrift.
+  - **Erhaltener Betrag:** Interaktive Schaltfläche. Ein Klick öffnet den Eingabedialog.
+  - **Rückgeld:** Live-Berechnung des Rückgelds (grün hervorgehoben bei Überzahlung, rot bei Fehlbetrag).
+  - **Bezahlt:** Großer Aktionsknopf, wechselt dynamisch auf Grün, sobald der erhaltene Betrag ausreicht.
+  - **Abbruch:** Roter Aktionsknopf (`#dc2626`), bricht den aktuellen Vorgang ab und leert alle Zähler.
+- **Touch-Ziffernblock (Dialog für erhaltenen Betrag):**
+  - Große, gut lesbare Knöpfe für Touch-Bedienung ohne überfrachtende Schnellwahltasten.
+  - Layout:
+    ```text
+    7  8  9
+    4  5  6
+    1  2  3
+    0  ,  CLR
+    ```
+  - Tastaturunterstützung (Ziffern, Komma, Backspace, Enter, Escape).
+- **Kompakt & Performant:**
+  - Kompiliert als hochoptimiertes, schlankes Binary (~132 KB).
 
 ## Voraussetzungen
 
-Für die Kompilierung wird das Entwicklerpaket für `gtkmm-4.0` benötigt:
+Entwicklerpakete für `gtkmm-4.0` installieren:
 
 ```bash
 sudo apt update
 sudo apt install -y libgtkmm-4.0-dev build-essential
 ```
 
-## Kompilieren & Ausführen
-
-### Mit Make:
+## Kompilieren & Starten
 
 ```bash
 # Bauen
 make
 
-# Ausführen
+# Starten
 make run
 # oder
 ./caisse
 ```
 
-### Mit Meson / Ninja:
+- **Escape:** Beendet das Programm.
+- **F11:** Schaltet zwischen Vollbild und Fenstermodus um.
 
-```bash
-meson setup build
-meson compile -C build
-./build/caisse
+## Konfiguration (`articles.yaml`)
+
+Artikel können direkt in `articles.yaml` bearbeitet oder ergänzt werden:
+
+```yaml
+articles:
+  - artikelname: "Kaffee"
+    artikelpreis: 2.50
+    farbe: "#8B5A2B"
+    sichtbarkeit: true
+    position: [0, 1]
 ```
-
-## Eigenschaften
-
-- Startet automatisch als **Fullscreen**-Kassenansicht.
-- Bietet eine wiederverwendbare Button-Klasse [`ArticleButton`](file:///home/oliver/Development/c++/gtk/caisse/src/article_button.hpp), abgeleitet von `Gtk::Button`:
-  - **article**: Zentrale Beschriftung (z. B. "Kaffee", "Tee").
-  - **color**: Frei wählbare Farbe mit automatischer Helligkeits-/Kontrastanpassung für die Beschriftung.
-  - **price**: Artikelpreis rechts oben im Button platziert (`get_price()` / `set_price()`).
-  - **amount**: Klickzähler mit optischem Badge oben links (`get_amount()`, `reset_amount()`).
-  - **totalprice**: Berechneter Gesamtpreis (`amount * price`, `get_totalprice()`).
-  - **Langer Tastendruck (>3s)**: Setzt die Anzahl dieses Artikels direkt auf `0` zurück.
-  - **Taktiles 3D-Design**: Schlagschatten mit realistischem Absenken (`transform: translateY(3px)`) beim Drücken.
-- Zeigt eine Kassen-Übersicht mit Gesamtsummenberechnung und Reset-Funktion.
-- Lässt sich jederzeit über die **Escape**-Taste (oder Alt+F4) beenden.

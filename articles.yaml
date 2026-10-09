@@ -1,0 +1,145 @@
+# ============================================================
+# Artikelkonfiguration für das Kassensystem (caisse)
+# Matrix-Layout: 4 Spalten (x: 0..3) × 5 Reihen (y: 0..4)
+# 
+# Felder pro Artikel:
+#   artikelname:  Name des Artikels (z.B. "Kaffee")
+#   artikelpreis: Preis in Euro (z.B. 2.50 oder 2,50)
+#   farbe:        Hex-Farbwert (z.B. "#8B5A2B")
+#   sichtbarkeit: true oder false
+#   position:     [x, y]  oder x: ..., y: ...
+# ============================================================
+
+articles:
+  # ----------------------------------------------------------
+  # Spalte 0: Kaffee & Heißgetränke
+  # ----------------------------------------------------------
+  - artikelname: "Espresso"
+    artikelpreis: 2.00
+    farbe: "#6F4E37"
+    sichtbarkeit: true
+    position: [0, 0]
+
+  - artikelname: "Kaffee"
+    artikelpreis: 2.50
+    farbe: "#8B5A2B"
+    sichtbarkeit: true
+    position: [0, 1]
+
+  - artikelname: "Cappuccino"
+    artikelpreis: 3.20
+    farbe: "#A0522D"
+    sichtbarkeit: true
+    position: [0, 2]
+
+  - artikelname: "Latte Macchiato"
+    artikelpreis: 3.60
+    farbe: "#C49A6C"
+    sichtbarkeit: true
+    position: [0, 3]
+
+  - artikelname: "Tee"
+    artikelpreis: 2.20
+    farbe: "#2E8B57"
+    sichtbarkeit: true
+    position: [0, 4]
+
+  # ----------------------------------------------------------
+  # Spalte 1: Kaltgetränke & Softdrinks
+  # ----------------------------------------------------------
+  - artikelname: "Wasser Still"
+    artikelpreis: 1.80
+    farbe: "#2980B9"
+    sichtbarkeit: true
+    position: [1, 0]
+
+  - artikelname: "Wasser Medium"
+    artikelpreis: 1.80
+    farbe: "#3498DB"
+    sichtbarkeit: true
+    position: [1, 1]
+
+  - artikelname: "Cola"
+    artikelpreis: 2.80
+    farbe: "#C0392B"
+    sichtbarkeit: true
+    position: [1, 2]
+
+  - artikelname: "Limonade"
+    artikelpreis: 2.80
+    farbe: "#E67E22"
+    sichtbarkeit: true
+    position: [1, 3]
+
+  - artikelname: "Apfelschorle"
+    artikelpreis: 3.00
+    farbe: "#27AE60"
+    sichtbarkeit: true
+    position: [1, 4]
+
+  # ----------------------------------------------------------
+  # Spalte 2: Snacks & Herzhaftes
+  # ----------------------------------------------------------
+  - artikelname: "Butterbrezel"
+    artikelpreis: 1.60
+    farbe: "#D35400"
+    sichtbarkeit: true
+    position: [2, 0]
+
+  - artikelname: "Croissant"
+    artikelpreis: 1.90
+    farbe: "#E59866"
+    sichtbarkeit: true
+    position: [2, 1]
+
+  - artikelname: "Käsebrötchen"
+    artikelpreis: 3.20
+    farbe: "#F39C12"
+    sichtbarkeit: true
+    position: [2, 2]
+
+  - artikelname: "Schinkenbrötchen"
+    artikelpreis: 3.50
+    farbe: "#D98880"
+    sichtbarkeit: true
+    position: [2, 3]
+
+  - artikelname: "Sandwich"
+    artikelpreis: 3.80
+    farbe: "#B9770E"
+    sichtbarkeit: true
+    position: [2, 4]
+
+  # ----------------------------------------------------------
+  # Spalte 3: Kuchen & Süßes
+  # ----------------------------------------------------------
+  - artikelname: "Apfelkuchen"
+    artikelpreis: 3.40
+    farbe: "#A93226"
+    sichtbarkeit: true
+    position: [3, 0]
+
+  - artikelname: "Käsekuchen"
+    artikelpreis: 3.50
+    farbe: "#F5B041"
+    sichtbarkeit: true
+    position: [3, 1]
+
+  - artikelname: "Schokomuffin"
+    artikelpreis: 2.60
+    farbe: "#4A235A"
+    sichtbarkeit: true
+    position: [3, 2]
+
+  - artikelname: "Donut"
+    artikelpreis: 2.20
+    farbe: "#AF7AC5"
+    sichtbarkeit: true
+    position: [3, 3]
+
+  - artikelname: "Schokoriegel"
+    artikelpreis: 1.50
+    farbe: "#7D6608"
+    sichtbarkeit: true
+    position: [3, 4]
+
