@@ -1,4 +1,5 @@
 #include "main_window.hpp"
+#include "scale_helper.hpp"
 #include <gdk/gdkkeysyms.h>
 #include <gtkmm/eventcontrollerkey.h>
 #include <iostream>
@@ -16,16 +17,19 @@ MainWindow::MainWindow()
 
 void MainWindow::setup_ui()
 {
+    auto& s = ScaleHelper::instance();
+    s.init_from_display(get_display());
+
     // ============================================================
     // HAUPTLAYOUT: 4 Spalten homogenes Raster
     // Spalte 0..2 (Spannweite 3) = 3/4 für Artikel-Matrix (links)
     // Spalte 3 (Spannweite 1) = 1/4 für Übersicht (rechts)
     // ============================================================
-    m_root_grid.set_margin_start(16);
-    m_root_grid.set_margin_end(16);
-    m_root_grid.set_margin_top(16);
-    m_root_grid.set_margin_bottom(16);
-    m_root_grid.set_column_spacing(18);
+    m_root_grid.set_margin_start(s.px(16));
+    m_root_grid.set_margin_end(s.px(16));
+    m_root_grid.set_margin_top(s.px(16));
+    m_root_grid.set_margin_bottom(s.px(16));
+    m_root_grid.set_column_spacing(s.px(18));
     m_root_grid.set_column_homogeneous(true);
     m_root_grid.set_row_homogeneous(false);
     m_root_grid.set_hexpand(true);
@@ -36,15 +40,17 @@ void MainWindow::setup_ui()
     // ============================================================
     m_left_container.set_hexpand(true);
     m_left_container.set_vexpand(true);
+    m_left_container.set_spacing(s.px(8));
 
-    m_matrix_title.set_markup("<span size='x-large' weight='bold'>Kassensystem — Artikel</span>");
+    m_matrix_title.set_markup("<span size='" + s.pt_str(18) + "' weight='bold'>Kassensystem — Artikel</span>");
     m_matrix_title.set_halign(Gtk::Align::START);
+    m_left_header.set_spacing(s.px(12));
     m_left_header.append(m_matrix_title);
     m_left_container.append(m_left_header);
 
     // 4 Spalten × 5 Reihen Grid
-    m_matrix_grid.set_row_spacing(10);
-    m_matrix_grid.set_column_spacing(10);
+    m_matrix_grid.set_row_spacing(s.px(10));
+    m_matrix_grid.set_column_spacing(s.px(10));
     m_matrix_grid.set_row_homogeneous(true);
     m_matrix_grid.set_column_homogeneous(true);
     m_matrix_grid.set_hexpand(true);
@@ -58,15 +64,17 @@ void MainWindow::setup_ui()
     // ============================================================
     m_right_panel.set_hexpand(true);
     m_right_panel.set_vexpand(true);
+    m_right_panel.set_spacing(s.px(14));
     m_right_panel.add_css_class("checkout-panel");
 
-    m_panel_title.set_markup("<span size='20pt' weight='bold' foreground='#ffffff'>Abrechnung</span>");
+    m_panel_title.set_markup("<span size='" + s.pt_str(20) + "' weight='bold' foreground='#ffffff'>Abrechnung</span>");
     m_panel_title.set_halign(Gtk::Align::START);
     m_right_panel.append(m_panel_title);
 
     // 1. Karte: Gesamtpreis
     m_card_total.add_css_class("overview-card");
-    m_lbl_total_title.set_markup("<span size='12pt' weight='bold' foreground='#94a3b8'>GESAMTPREIS</span>");
+    m_card_total.set_spacing(s.px(4));
+    m_lbl_total_title.set_markup("<span size='" + s.pt_str(12) + "' weight='bold' foreground='#94a3b8'>GESAMTPREIS</span>");
     m_lbl_total_title.set_halign(Gtk::Align::START);
     m_card_total.append(m_lbl_total_title);
 
@@ -79,7 +87,8 @@ void MainWindow::setup_ui()
 
     // 2. Karte: Erhaltener Betrag (Tippen öffnet Eingabedialog)
     m_card_received.add_css_class("overview-card");
-    m_lbl_received_title.set_markup("<span size='12pt' weight='bold' foreground='#94a3b8'>ERHALTENER BETRAG (Tippen)</span>");
+    m_card_received.set_spacing(s.px(4));
+    m_lbl_received_title.set_markup("<span size='" + s.pt_str(12) + "' weight='bold' foreground='#94a3b8'>ERHALTENER BETRAG (Tippen)</span>");
     m_lbl_received_title.set_halign(Gtk::Align::START);
     m_card_received.append(m_lbl_received_title);
 
@@ -91,7 +100,8 @@ void MainWindow::setup_ui()
 
     // 3. Karte: Rückgeld
     m_card_change.add_css_class("overview-card");
-    m_lbl_change_title.set_markup("<span size='12pt' weight='bold' foreground='#94a3b8'>RÜCKGELD</span>");
+    m_card_change.set_spacing(s.px(4));
+    m_lbl_change_title.set_markup("<span size='" + s.pt_str(12) + "' weight='bold' foreground='#94a3b8'>RÜCKGELD</span>");
     m_lbl_change_title.set_halign(Gtk::Align::START);
     m_card_change.append(m_lbl_change_title);
 
@@ -105,9 +115,9 @@ void MainWindow::setup_ui()
 
     // 4. Aktions-Knopf: BEZAHLT (rot solange Betrag unzureichend, grün sobald Betrag ausreicht)
     m_btn_paid.set_name("main-btn-paid");           // Eindeutige Widget-ID für CSS #main-btn-paid
-    m_btn_paid.set_size_request(-1, 80);
-    m_btn_paid.set_margin_bottom(28);
-    m_lbl_paid.set_markup("<span size='22pt' weight='bold' foreground='#ffffff'>✓  BEZAHLT</span>");
+    m_btn_paid.set_size_request(-1, s.px(80));
+    m_btn_paid.set_margin_bottom(s.px(28));
+    m_lbl_paid.set_markup("<span size='" + s.pt_str(22) + "' weight='bold' foreground='#ffffff'>✓  BEZAHLT</span>");
     m_btn_paid.set_child(m_lbl_paid);
     m_btn_paid.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_paid_clicked));
     m_paid_css_provider = Gtk::CssProvider::create();
@@ -116,38 +126,38 @@ void MainWindow::setup_ui()
 
     // 5. Aktions-Knopf: Abbruch (immer rot, zentriert und schmaler als Bezahlt-Knopf)
     m_btn_cancel.set_name("main-btn-cancel");       // Eindeutige Widget-ID für CSS #main-btn-cancel
-    m_btn_cancel.set_size_request(180, 46);
+    m_btn_cancel.set_size_request(s.px(180), s.px(46));
     m_btn_cancel.set_halign(Gtk::Align::CENTER);
-    m_btn_cancel.set_margin_bottom(6);
-    m_lbl_cancel.set_markup("<span size='15pt' weight='bold' foreground='#ffffff'>✕  Abbruch</span>");
+    m_btn_cancel.set_margin_bottom(s.px(6));
+    m_lbl_cancel.set_markup("<span size='" + s.pt_str(15) + "' weight='bold' foreground='#ffffff'>✕  Abbruch</span>");
     m_btn_cancel.set_child(m_lbl_cancel);
     m_btn_cancel.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_cancel_clicked));
     m_cancel_css_provider = Gtk::CssProvider::create();
-    m_cancel_css_provider->load_from_data(R"(
-        #main-btn-cancel {
-            background-color: #dc2626;
-            background-image: none;
-            background: #dc2626;
-            color: #ffffff;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 0, 0, 0.2);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.35);
-            transition: all 120ms ease;
-        }
-        #main-btn-cancel:hover {
-            background-color: #ef4444;
-            background-image: none;
-            background: #ef4444;
-            box-shadow: 0 5px 8px rgba(0, 0, 0, 0.4);
-        }
-        #main-btn-cancel:active {
-            transform: translateY(2px);
-            background-color: #b91c1c;
-            background-image: none;
-            background: #b91c1c;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
-        }
-    )");
+    const std::string cancel_css =
+        "#main-btn-cancel {\n"
+        "    background-color: #dc2626;\n"
+        "    background-image: none;\n"
+        "    background: #dc2626;\n"
+        "    color: #ffffff;\n"
+        "    border-radius: " + std::to_string(s.px(10)) + "px;\n"
+        "    border: 1px solid rgba(0, 0, 0, 0.2);\n"
+        "    box-shadow: 0 " + std::to_string(s.px(4)) + "px " + std::to_string(s.px(6)) + "px rgba(0, 0, 0, 0.35);\n"
+        "    transition: all 120ms ease;\n"
+        "}\n"
+        "#main-btn-cancel:hover {\n"
+        "    background-color: #ef4444;\n"
+        "    background-image: none;\n"
+        "    background: #ef4444;\n"
+        "    box-shadow: 0 " + std::to_string(s.px(5)) + "px " + std::to_string(s.px(8)) + "px rgba(0, 0, 0, 0.4);\n"
+        "}\n"
+        "#main-btn-cancel:active {\n"
+        "    transform: translateY(" + std::to_string(s.px(2)) + "px);\n"
+        "    background-color: #b91c1c;\n"
+        "    background-image: none;\n"
+        "    background: #b91c1c;\n"
+        "    box-shadow: 0 " + std::to_string(s.px(1)) + "px " + std::to_string(s.px(3)) + "px rgba(0, 0, 0, 0.25);\n"
+        "}\n";
+    m_cancel_css_provider->load_from_data(cancel_css);
     m_right_panel.append(m_btn_cancel);
 
     m_root_grid.attach(m_right_panel, 3, 0, 1, 1);
@@ -159,36 +169,35 @@ void MainWindow::setup_ui()
     // (ID-Selektoren wie #main-btn-paid matchen nur global im Display-CSS-Baum)
     // ============================================================
     m_css_provider = Gtk::CssProvider::create();
-    const std::string css = R"(
-        .checkout-panel {
-            background-color: #1e293b;
-            border-radius: 14px;
-            padding: 16px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-        }
-        .overview-card {
-            background-color: #0f172a;
-            border-radius: 10px;
-            padding: 12px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .btn-received-amount {
-            background-color: #334155;
-            border: 1px solid #475569;
-            border-radius: 8px;
-            padding: 10px 14px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            transition: all 120ms ease;
-        }
-        .btn-received-amount:hover {
-            background-color: #3b4e68;
-            border-color: #64748b;
-        }
-        .btn-received-amount:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-        }
-    )";
+    const std::string css =
+        ".checkout-panel {\n"
+        "    background-color: #1e293b;\n"
+        "    border-radius: " + std::to_string(s.px(14)) + "px;\n"
+        "    padding: " + std::to_string(s.px(16)) + "px;\n"
+        "    box-shadow: 0 " + std::to_string(s.px(4)) + "px " + std::to_string(s.px(12)) + "px rgba(0, 0, 0, 0.35);\n"
+        "}\n"
+        ".overview-card {\n"
+        "    background-color: #0f172a;\n"
+        "    border-radius: " + std::to_string(s.px(10)) + "px;\n"
+        "    padding: " + std::to_string(s.px(12)) + "px " + std::to_string(s.px(16)) + "px;\n"
+        "    border: 1px solid rgba(255, 255, 255, 0.08);\n"
+        "}\n"
+        ".btn-received-amount {\n"
+        "    background-color: #334155;\n"
+        "    border: 1px solid #475569;\n"
+        "    border-radius: " + std::to_string(s.px(8)) + "px;\n"
+        "    padding: " + std::to_string(s.px(10)) + "px " + std::to_string(s.px(14)) + "px;\n"
+        "    box-shadow: 0 " + std::to_string(s.px(2)) + "px " + std::to_string(s.px(4)) + "px rgba(0, 0, 0, 0.2);\n"
+        "    transition: all 120ms ease;\n"
+        "}\n"
+        ".btn-received-amount:hover {\n"
+        "    background-color: #3b4e68;\n"
+        "    border-color: #64748b;\n"
+        "}\n"
+        ".btn-received-amount:active {\n"
+        "    transform: translateY(" + std::to_string(s.px(2)) + "px);\n"
+        "    box-shadow: 0 " + std::to_string(s.px(1)) + "px " + std::to_string(s.px(2)) + "px rgba(0, 0, 0, 0.2);\n"
+        "}\n";
     m_css_provider->load_from_data(css);
     get_style_context()->add_provider(m_css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
 
@@ -264,6 +273,7 @@ void MainWindow::load_articles()
 
 void MainWindow::update_overview()
 {
+    auto& s = ScaleHelper::instance();
     m_total_price = 0.0;
     m_total_items = 0;
 
@@ -272,43 +282,43 @@ void MainWindow::update_overview()
         m_total_items += btn->get_amount();
     }
 
-    // 1. Gesamtpreis-Anzeige (deutlich größere Schrift)
+    // 1. Gesamtpreis-Anzeige (proportional skalierte Schrift)
     const std::string total_str = ArticleButton::format_currency(m_total_price).raw();
     m_lbl_total_value.set_markup(
-        "<span size='32pt' weight='bold' foreground='#ffffff'>" + total_str + "</span>"
+        "<span size='" + s.pt_str(32) + "' weight='bold' foreground='#ffffff'>" + total_str + "</span>"
     );
 
     const std::string count_str = "(" + std::to_string(m_total_items) +
                                   (m_total_items == 1 ? " Artikel ausgewählt)" : " Artikel ausgewählt)");
     m_lbl_total_count.set_markup(
-        "<span size='13pt' foreground='#94a3b8'>" + count_str + "</span>"
+        "<span size='" + s.pt_str(13) + "' foreground='#94a3b8'>" + count_str + "</span>"
     );
 
-    // 2. Erhaltener Betrag Anzeige (deutlich größere Schrift)
+    // 2. Erhaltener Betrag Anzeige (proportional skalierte Schrift)
     const std::string received_str = ArticleButton::format_currency(m_received_amount).raw();
     m_lbl_received_value.set_markup(
-        "<span size='28pt' weight='bold' foreground='#38bdf8'>" + received_str + "</span>"
+        "<span size='" + s.pt_str(28) + "' weight='bold' foreground='#38bdf8'>" + received_str + "</span>"
     );
 
     const long total_cents = std::lround(m_total_price * 100.0);
     const long received_cents = std::lround(m_received_amount * 100.0);
 
-    // 3. Rückgeld-Anzeige (deutlich größere Schrift)
+    // 3. Rückgeld-Anzeige (proportional skalierte Schrift)
     if (received_cents <= 0 && total_cents <= 0) {
         m_lbl_change_value.set_markup(
-            "<span size='32pt' weight='bold' foreground='#94a3b8'>0,00 €</span>"
+            "<span size='" + s.pt_str(32) + "' weight='bold' foreground='#94a3b8'>0,00 €</span>"
         );
     } else if (received_cents >= total_cents) {
         const double change = (received_cents - total_cents) / 100.0;
         const std::string change_str = ArticleButton::format_currency(change).raw();
         m_lbl_change_value.set_markup(
-            "<span size='32pt' weight='bold' foreground='#22c55e'>+ " + change_str + "</span>"
+            "<span size='" + s.pt_str(32) + "' weight='bold' foreground='#22c55e'>+ " + change_str + "</span>"
         );
     } else {
         const double missing = (total_cents - received_cents) / 100.0;
         const std::string missing_str = ArticleButton::format_currency(missing).raw();
         m_lbl_change_value.set_markup(
-            "<span size='26pt' weight='bold' foreground='#ef4444'>Noch: " + missing_str + "</span>"
+            "<span size='" + s.pt_str(26) + "' weight='bold' foreground='#ef4444'>Noch: " + missing_str + "</span>"
         );
     }
 
@@ -319,6 +329,7 @@ void MainWindow::update_overview()
 
 void MainWindow::update_paid_button_style(bool is_sufficient)
 {
+    auto& s = ScaleHelper::instance();
     const std::string bg = is_sufficient ? "#16a34a" : "#dc2626";
     const std::string hover = is_sufficient ? "#22c55e" : "#ef4444";
     const std::string active = is_sufficient ? "#15803d" : "#b91c1c";
@@ -329,23 +340,23 @@ void MainWindow::update_paid_button_style(bool is_sufficient)
         "    background-image: none;\n"
         "    background: " + bg + ";\n"
         "    color: #ffffff;\n"
-        "    border-radius: 12px;\n"
+        "    border-radius: " + std::to_string(s.px(12)) + "px;\n"
         "    border: 1px solid rgba(0, 0, 0, 0.2);\n"
-        "    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.35);\n"
+        "    box-shadow: 0 " + std::to_string(s.px(4)) + "px " + std::to_string(s.px(6)) + "px rgba(0, 0, 0, 0.35);\n"
         "    transition: all 120ms ease;\n"
         "}\n"
         "#main-btn-paid:hover {\n"
         "    background-color: " + hover + ";\n"
         "    background-image: none;\n"
         "    background: " + hover + ";\n"
-        "    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);\n"
+        "    box-shadow: 0 " + std::to_string(s.px(6)) + "px " + std::to_string(s.px(10)) + "px rgba(0, 0, 0, 0.4);\n"
         "}\n"
         "#main-btn-paid:active {\n"
         "    background-color: " + active + ";\n"
         "    background-image: none;\n"
         "    background: " + active + ";\n"
-        "    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);\n"
-        "    transform: translateY(2px);\n"
+        "    box-shadow: 0 " + std::to_string(s.px(1)) + "px " + std::to_string(s.px(3)) + "px rgba(0, 0, 0, 0.25);\n"
+        "    transform: translateY(" + std::to_string(s.px(2)) + "px);\n"
         "}\n";
     m_paid_css_provider->load_from_data(css);
 }

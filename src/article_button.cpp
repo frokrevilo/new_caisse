@@ -1,4 +1,5 @@
 #include "article_button.hpp"
+#include "scale_helper.hpp"
 
 #include <gdkmm/rgba.h>
 #include <glibmm/main.h>
@@ -31,14 +32,21 @@ ArticleButton::~ArticleButton()
 
 void ArticleButton::setup_ui()
 {
+    auto& s = ScaleHelper::instance();
+
+    // Standard-Schriftgrößen proportional zur Auflösung initialisieren
+    m_article_font_size = s.pt_str(16);
+    m_price_font_size = s.pt_str(11);
+    m_amount_font_size = s.pt_str(11);
+
     // Eindeutige CSS-ID für jeden Button generieren
     static unsigned int s_counter = 0;
     m_css_id = "article-btn-" + std::to_string(++s_counter);
     set_name(m_css_id);
     add_css_class("article-button");
 
-    // Standardgröße für Touch-/POS-Bedienung in der 4x5 Matrix
-    set_size_request(130, 70);
+    // Proportionale Größe für Touch-/POS-Bedienung in der 4x5 Matrix
+    set_size_request(s.px(130), s.px(70));
     set_hexpand(true);
     set_vexpand(true);
 
@@ -48,15 +56,15 @@ void ArticleButton::setup_ui()
     m_amount_label.get_style_context()->add_provider(m_css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
 
     // Vertikaler Hauptcontainer
-    m_root_box.set_spacing(4);
+    m_root_box.set_spacing(s.px(4));
     m_root_box.set_can_target(false);
-    m_root_box.set_margin_start(4);
-    m_root_box.set_margin_end(4);
-    m_root_box.set_margin_top(2);
-    m_root_box.set_margin_bottom(2);
+    m_root_box.set_margin_start(s.px(4));
+    m_root_box.set_margin_end(s.px(4));
+    m_root_box.set_margin_top(s.px(2));
+    m_root_box.set_margin_bottom(s.px(2));
 
     // Obere Leiste: Links Klickzähler, Rechts Preis
-    m_top_box.set_spacing(4);
+    m_top_box.set_spacing(s.px(4));
     m_top_box.set_can_target(false);
 
     // Klickzähler-Badge (oben links)
@@ -95,7 +103,7 @@ void ArticleButton::setup_ui()
 
     // Unterer Abstandshalter zur optischen Zentrierung der Artikelbeschriftung
     m_bottom_spacer.set_can_target(false);
-    m_bottom_spacer.set_size_request(-1, 14);
+    m_bottom_spacer.set_size_request(-1, s.px(14));
     m_root_box.append(m_bottom_spacer);
 
     set_child(m_root_box);
@@ -340,14 +348,15 @@ void ArticleButton::update_display()
 
 void ArticleButton::update_style()
 {
+    auto& s = ScaleHelper::instance();
     std::ostringstream css;
 
     // Basis-Button-Styling mit 3D-Schlagschatten und Übergangsanimation
     css << "#" << m_css_id << " {\n"
-        << "    border-radius: 10px;\n"
-        << "    padding: 6px 10px;\n"
-        << "    margin: 3px;\n"
-        << "    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.2);\n"
+        << "    border-radius: " << s.px(10) << "px;\n"
+        << "    padding: " << s.px(6) << "px " << s.px(10) << "px;\n"
+        << "    margin: " << s.px(3) << "px;\n"
+        << "    box-shadow: 0 " << s.px(4) << "px " << s.px(6) << "px rgba(0, 0, 0, 0.35), 0 " << s.px(1) << "px " << s.px(3) << "px rgba(0, 0, 0, 0.2);\n"
         << "    transition: all 120ms ease;\n";
 
     if (!m_color.empty()) {
@@ -357,12 +366,12 @@ void ArticleButton::update_style()
     }
     css << "}\n"
         << "#" << m_css_id << ":hover {\n"
-        << "    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.42), 0 2px 4px rgba(0, 0, 0, 0.25);\n"
+        << "    box-shadow: 0 " << s.px(6) << "px " << s.px(12) << "px rgba(0, 0, 0, 0.42), 0 " << s.px(2) << "px " << s.px(4) << "px rgba(0, 0, 0, 0.25);\n"
         << "    filter: brightness(1.08);\n"
         << "}\n"
         << "#" << m_css_id << ":active {\n"
-        << "    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);\n"
-        << "    transform: translateY(3px);\n"
+        << "    box-shadow: 0 " << s.px(1) << "px " << s.px(2) << "px rgba(0, 0, 0, 0.25);\n"
+        << "    transform: translateY(" << s.px(3) << "px);\n"
         << "    filter: brightness(0.93);\n"
         << "}\n";
 
@@ -370,15 +379,15 @@ void ArticleButton::update_style()
         const bool dark_text = is_light_background();
         // Badge für Klickzähler passend zum Kontrast einfärben
         css << "label.article-btn-amount, #" << m_css_id << " .article-btn-amount {\n"
-            << "    border-radius: 10px;\n"
-            << "    padding: 1px 7px;\n"
+            << "    border-radius: " << s.px(10) << "px;\n"
+            << "    padding: " << s.px(1) << "px " << s.px(7) << "px;\n"
             << "    background-color: " << (dark_text ? "rgba(0, 0, 0, 0.16)" : "rgba(255, 255, 255, 0.28)") << ";\n"
             << "    color: " << (dark_text ? "#1c1c1e" : "#ffffff") << ";\n"
             << "}\n";
     } else {
         css << "label.article-btn-amount, #" << m_css_id << " .article-btn-amount {\n"
-            << "    border-radius: 10px;\n"
-            << "    padding: 1px 7px;\n"
+            << "    border-radius: " << s.px(10) << "px;\n"
+            << "    padding: " << s.px(1) << "px " << s.px(7) << "px;\n"
             << "    background-color: rgba(127, 127, 127, 0.25);\n"
             << "}\n";
     }
