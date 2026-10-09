@@ -132,10 +132,16 @@ When modifying or extending this project, keep these GTK 4-specific rules in min
 
 ## 5. Build System & Tooling
 
-The [`Makefile`](file:///home/oliver/Development/c++/gtk/caisse/Makefile) uses standard GNU Make conventions:
+The [`Makefile`](file:///home/oliver/Development/c++/gtk/caisse/Makefile) uses standard GNU Make conventions and size-optimized production flags:
 
 - **Build output:** Intermediate files go into `build/`, executable `caisse` is placed in project root.
 - **Header dependency tracking:** `-MMD -MP` flags generate `.d` dependency files in `build/`, included via `-include $(DEPS)`. Editing any `.hpp` file triggers recompilation of only the affected translation units.
+- **Binary Size Optimizations:**
+  - `-Os`: Code size optimization.
+  - `-flto`: Link-time whole-program optimization.
+  - `-ffunction-sections -fdata-sections` & `-Wl,--gc-sections`: Unused code/data elimination.
+  - `-Wl,--as-needed`: Omits unused shared library dependencies.
+  - `-Wl,-s`: Strips symbol tables, reducing binary size from 148 KB to ~79 KB.
 - **Commands:**
   ```bash
   make        # Compile and link the application

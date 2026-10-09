@@ -1,5 +1,6 @@
 CXX ?= g++
-CXXFLAGS ?= -std=c++20 -O2 -Wall -Wextra -MMD -MP
+CXXFLAGS ?= -std=c++20 -Os -flto -ffunction-sections -fdata-sections -Wall -Wextra -MMD -MP
+LDFLAGS ?= -flto -Wl,--gc-sections -Wl,--as-needed -Wl,-s
 
 GTKMM_CFLAGS := $(shell pkg-config --cflags gtkmm-4.0 2>/dev/null)
 GTKMM_LIBS := $(shell pkg-config --libs gtkmm-4.0 2>/dev/null)
@@ -23,7 +24,7 @@ check-deps:
 	}
 
 $(TARGET): check-deps $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(GTKMM_LIBS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJS) $(GTKMM_LIBS)
 
 $(BUILD_DIR)/%.o: src/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $(GTKMM_CFLAGS) -c $< -o $@
