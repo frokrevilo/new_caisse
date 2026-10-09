@@ -1,6 +1,6 @@
 CXX ?= g++
-CXXFLAGS ?= -std=c++20 -Os -flto -ffunction-sections -fdata-sections -Wall -Wextra -MMD -MP
-LDFLAGS ?= -flto -Wl,--gc-sections -Wl,--as-needed -Wl,-s
+CXXFLAGS ?= -std=c++20 -Os -flto=auto -ffunction-sections -fdata-sections -Wall -Wextra -MMD -MP
+LDFLAGS ?= -flto=auto -Wl,--gc-sections -Wl,--as-needed -Wl,-s
 
 GTKMM_CFLAGS := $(shell pkg-config --cflags gtkmm-4.0 2>/dev/null)
 GTKMM_LIBS := $(shell pkg-config --libs gtkmm-4.0 2>/dev/null)

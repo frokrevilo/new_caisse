@@ -23,7 +23,7 @@
 class CashInputDialog : public Gtk::Window {
 public:
     CashInputDialog(Gtk::Window& parent, double total_due, double current_received = 0.0);
-    ~CashInputDialog() override = default;
+    ~CashInputDialog() override;
 
     /// Signal wird ausgelöst, wenn der Betrag bestätigt ("Übernehmen") wird.
     sigc::signal<void(double)>& signal_amount_confirmed();
@@ -31,6 +31,7 @@ public:
 private:
     void setup_ui();
     void update_display();
+    void check_replace_on_input();
     void on_digit_clicked(char digit);
     void on_comma_clicked();
     void on_clear_clicked();

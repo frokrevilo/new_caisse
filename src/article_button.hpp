@@ -40,12 +40,10 @@ public:
     // --- Amount (Klickzähler) ---
     [[nodiscard]] int get_amount() const;
     void reset_amount();
-    void reset(); // Alias für reset_amount()
     void set_amount(int amount);
 
     // --- Total price ---
-    [[nodiscard]] double get_totalprice() const;
-    [[nodiscard]] double get_total_price() const; // Alias mit Unterstrich
+    [[nodiscard]] double get_total_price() const;
 
     // --- Währungssymbol & Währungsformatierung ---
     void set_currency_symbol(const Glib::ustring& symbol);
@@ -84,7 +82,7 @@ private:
     Glib::ustring m_currency_symbol{"€"};
     Glib::ustring m_css_id;
 
-    // Standard-Schriftgrößen (hier anpassbar)
+    // Standard-Schriftgrößen (proportional durch ScaleHelper initialisiert)
     Glib::ustring m_article_font_size{"16pt"}; // Artikelbeschriftung
     Glib::ustring m_price_font_size{"11pt"};    // Preisbeschriftung
     Glib::ustring m_amount_font_size{"11pt"};   // Klickzähler-Badge
@@ -101,7 +99,6 @@ private:
     Gtk::Label m_amount_label;
     Gtk::Label m_price_label;
     Gtk::Label m_article_label;
-    Gtk::Box m_bottom_spacer{Gtk::Orientation::HORIZONTAL};
 
     // Style-Provider für individuelles Button-Styling
     Glib::RefPtr<Gtk::CssProvider> m_css_provider;

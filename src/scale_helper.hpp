@@ -1,8 +1,6 @@
 #pragma once
 
 #include <gdkmm/display.h>
-#include <gdkmm/monitor.h>
-#include <gdkmm/rectangle.h>
 #include <string>
 #include <algorithm>
 #include <cmath>
@@ -22,15 +20,20 @@
  */
 class ScaleHelper {
 public:
+    /// Liefert die globale Singleton-Instanz.
     static ScaleHelper& instance();
+
+    // Singleton: Kopieren und Zuweisen verhindern
+    ScaleHelper(const ScaleHelper&) = delete;
+    ScaleHelper& operator=(const ScaleHelper&) = delete;
 
     /// Initialisiert die Skalierung anhand des Standard-Monitors des angegebenen Displays.
     void init_from_display(const Glib::RefPtr<Gdk::Display>& display = Gdk::Display::get_default());
 
-    /// Manuelle Festlegung der Zielauflösung.
+    /// Manuelle Festlegung der Zielauflösung (z.B. bei Fensteränderungen oder Tests).
     void set_resolution(int width, int height);
 
-    /// Manuelle Vorgabe eines Skalierungsfaktors (z. B. 1.0 = Full HD).
+    /// Manuelle Vorgabe eines Skalierungsfaktors (z. B. 1.0 = Full HD, 0.71 = 768p, 2.0 = 4K).
     void set_factor(double factor);
 
     /// Aktuell erkannte/gesetzte Bildschirmbreite in Pixeln.
@@ -42,18 +45,29 @@ public:
     /// Skalierungsfaktor bezogen auf 1920x1080 (z. B. 1.0 bei Full-HD, 0.71 bei 768p, 2.0 bei 4K).
     [[nodiscard]] double factor() const { return m_factor; }
 
-    /// Skaliert einen Pixelwert proportional zur Auflösung (mindestens 1 px bei base_px > 0).
+    /**
+     * @brief Skaliert einen Basis-Pixelwert proportional zur aktuellen Bildschirmauflösung.
+     * @param base_px Pixelwert bei 1920x1080 Referenzauflösung.
+     * @return Skalierter Pixelwert (mindestens 1 px bei base_px > 0).
+     */
     [[nodiscard]] int px(int base_px) const {
         if (base_px <= 0) return base_px;
         return std::max(1, static_cast<int>(std::round(base_px * m_factor)));
     }
 
-    /// Skaliert eine Pango-Punktgröße (pt), optional mit Untergrenze min_pt.
+    /**
+     * @brief Skaliert eine Pango-Punktgröße (pt) proportional zur Bildschirmauflösung.
+     * @param base_pt Punktgröße bei 1920x1080 Referenzauflösung.
+     * @param min_pt Untergrenze zur Gewährleistung der Mindestlesbarkeit (Standard: 6pt).
+     * @return Skalierte Punktgröße in pt.
+     */
     [[nodiscard]] int pt(int base_pt, int min_pt = 6) const {
         return std::max(min_pt, static_cast<int>(std::round(base_pt * m_factor)));
     }
 
-    /// Gibt die skalierte Punktgröße als Pango-Markup-String zurück (z. B. "18pt").
+    /**
+     * @brief Gibt die skalierte Punktgröße als Pango-Markup-String zurück (z. B. "18pt").
+     */
     [[nodiscard]] std::string pt_str(int base_pt, int min_pt = 6) const {
         return std::to_string(pt(base_pt, min_pt)) + "pt";
     }

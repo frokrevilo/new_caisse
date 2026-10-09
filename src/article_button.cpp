@@ -102,9 +102,10 @@ void ArticleButton::setup_ui()
     m_root_box.append(m_article_label);
 
     // Unterer Abstandshalter zur optischen Zentrierung der Artikelbeschriftung
-    m_bottom_spacer.set_can_target(false);
-    m_bottom_spacer.set_size_request(-1, s.px(14));
-    m_root_box.append(m_bottom_spacer);
+    auto bottom_spacer = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
+    bottom_spacer->set_can_target(false);
+    bottom_spacer->set_size_request(-1, s.px(14));
+    m_root_box.append(*bottom_spacer);
 
     set_child(m_root_box);
 
@@ -197,25 +198,15 @@ void ArticleButton::reset_amount()
     update_display();
 }
 
-void ArticleButton::reset()
-{
-    reset_amount();
-}
-
 void ArticleButton::set_amount(int amount)
 {
     m_amount = std::max(0, amount);
     update_display();
 }
 
-double ArticleButton::get_totalprice() const
-{
-    return static_cast<double>(m_amount) * m_price;
-}
-
 double ArticleButton::get_total_price() const
 {
-    return get_totalprice();
+    return static_cast<double>(m_amount) * m_price;
 }
 
 void ArticleButton::set_currency_symbol(const Glib::ustring& symbol)
@@ -336,7 +327,7 @@ void ArticleButton::update_display()
         if (m_amount > 0) {
             std::string tip = m_article + ": " + std::to_string(m_amount) + " × " +
                               format_currency(m_price, m_currency_symbol).raw() + " = " +
-                              format_currency(get_totalprice(), m_currency_symbol).raw();
+                              format_currency(get_total_price(), m_currency_symbol).raw();
             set_tooltip_text(tip);
         } else {
             set_tooltip_text(m_article + " (" + format_currency(m_price, m_currency_symbol).raw() + ")");

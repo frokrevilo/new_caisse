@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <sstream>
 #include <algorithm>
 #include <cctype>
 
@@ -246,16 +245,16 @@ std::vector<ArticleConfig> load_articles_from_yaml(const std::string& filepath) 
             continue;
         }
 
-        if (in_position_block) {
-            if (key == "x" || key == "col" || key == "spalte") {
-                try { current.x = std::stoi(val); } catch (...) {}
-                continue;
-            } else if (key == "y" || key == "row" || key == "zeile" || key == "reihe") {
-                try { current.y = std::stoi(val); } catch (...) {}
-                continue;
-            } else {
-                in_position_block = false;
-            }
+        // Schlüssel-Wert-Zuordnung (sowohl deutsche als auch englische Bezeichnungen unterstützt)
+        if (key == "x" || key == "col" || key == "spalte") {
+            try { current.x = std::stoi(val); } catch (...) {}
+            continue;
+        } else if (key == "y" || key == "row" || key == "zeile" || key == "reihe") {
+            try { current.y = std::stoi(val); } catch (...) {}
+            continue;
+        } else {
+            // Sobald ein anderer Schlüssel folgt, ist der Position-Unterblock beendet
+            in_position_block = false;
         }
 
         if (key == "artikelname" || key == "name" || key == "titel" || key == "bezeichnung") {
@@ -268,10 +267,6 @@ std::vector<ArticleConfig> load_articles_from_yaml(const std::string& filepath) 
             current.color = strip_quotes(val);
         } else if (key == "sichtbarkeit" || key == "sichtbar" || key == "visible" || key == "visibility") {
             current.visible = parse_bool(val);
-        } else if (key == "x" || key == "col" || key == "spalte") {
-            try { current.x = std::stoi(val); } catch (...) {}
-        } else if (key == "y" || key == "row" || key == "zeile" || key == "reihe") {
-            try { current.y = std::stoi(val); } catch (...) {}
         }
     }
 

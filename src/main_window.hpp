@@ -3,7 +3,12 @@
 #include "article_button.hpp"
 #include "article_config.hpp"
 #include "cash_input_dialog.hpp"
-#include <gtkmm.h>
+#include <gtkmm/window.h>
+#include <gtkmm/grid.h>
+#include <gtkmm/box.h>
+#include <gtkmm/label.h>
+#include <gtkmm/button.h>
+#include <gtkmm/cssprovider.h>
 #include <vector>
 #include <memory>
 
@@ -28,6 +33,7 @@ private:
     void setup_ui();
     void load_articles();
     void update_overview();
+    void reset_sale();
     void on_received_amount_clicked();
     void on_paid_clicked();
     void on_cancel_clicked();

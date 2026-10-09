@@ -1,17 +1,20 @@
 #include "scale_helper.hpp"
+#include <gdkmm/monitor.h>
+#include <gdkmm/rectangle.h>
 #include <giomm/listmodel.h>
 #include <iostream>
 #include <cstdlib>
-#include <sstream>
 
 ScaleHelper& ScaleHelper::instance()
 {
+    // Thread-sicheres Meyers Singleton
     static ScaleHelper s_instance;
     return s_instance;
 }
 
 ScaleHelper::ScaleHelper()
 {
+    // Standardmäßig mit Full-HD Referenzwert initialisieren
     set_resolution(1920, 1080);
 }
 

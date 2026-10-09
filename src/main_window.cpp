@@ -2,7 +2,6 @@
 #include "scale_helper.hpp"
 #include <gdk/gdkkeysyms.h>
 #include <gtkmm/eventcontrollerkey.h>
-#include <iostream>
 #include <cmath>
 
 MainWindow::MainWindow()
@@ -137,7 +136,6 @@ void MainWindow::setup_ui()
         "#main-btn-cancel {\n"
         "    background-color: #dc2626;\n"
         "    background-image: none;\n"
-        "    background: #dc2626;\n"
         "    color: #ffffff;\n"
         "    border-radius: " + std::to_string(s.px(10)) + "px;\n"
         "    border: 1px solid rgba(0, 0, 0, 0.2);\n"
@@ -147,14 +145,12 @@ void MainWindow::setup_ui()
         "#main-btn-cancel:hover {\n"
         "    background-color: #ef4444;\n"
         "    background-image: none;\n"
-        "    background: #ef4444;\n"
         "    box-shadow: 0 " + std::to_string(s.px(5)) + "px " + std::to_string(s.px(8)) + "px rgba(0, 0, 0, 0.4);\n"
         "}\n"
         "#main-btn-cancel:active {\n"
         "    transform: translateY(" + std::to_string(s.px(2)) + "px);\n"
         "    background-color: #b91c1c;\n"
         "    background-image: none;\n"
-        "    background: #b91c1c;\n"
         "    box-shadow: 0 " + std::to_string(s.px(1)) + "px " + std::to_string(s.px(3)) + "px rgba(0, 0, 0, 0.25);\n"
         "}\n";
     m_cancel_css_provider->load_from_data(cancel_css);
@@ -278,7 +274,7 @@ void MainWindow::update_overview()
     m_total_items = 0;
 
     for (const auto& btn : m_article_buttons) {
-        m_total_price += btn->get_totalprice();
+        m_total_price += btn->get_total_price();
         m_total_items += btn->get_amount();
     }
 
@@ -288,8 +284,7 @@ void MainWindow::update_overview()
         "<span size='" + s.pt_str(32) + "' weight='bold' foreground='#ffffff'>" + total_str + "</span>"
     );
 
-    const std::string count_str = "(" + std::to_string(m_total_items) +
-                                  (m_total_items == 1 ? " Artikel ausgewählt)" : " Artikel ausgewählt)");
+    const std::string count_str = "(" + std::to_string(m_total_items) + " Artikel ausgewählt)";
     m_lbl_total_count.set_markup(
         "<span size='" + s.pt_str(13) + "' foreground='#94a3b8'>" + count_str + "</span>"
     );
@@ -338,7 +333,6 @@ void MainWindow::update_paid_button_style(bool is_sufficient)
         "#main-btn-paid {\n"
         "    background-color: " + bg + ";\n"
         "    background-image: none;\n"
-        "    background: " + bg + ";\n"
         "    color: #ffffff;\n"
         "    border-radius: " + std::to_string(s.px(12)) + "px;\n"
         "    border: 1px solid rgba(0, 0, 0, 0.2);\n"
@@ -348,17 +342,25 @@ void MainWindow::update_paid_button_style(bool is_sufficient)
         "#main-btn-paid:hover {\n"
         "    background-color: " + hover + ";\n"
         "    background-image: none;\n"
-        "    background: " + hover + ";\n"
         "    box-shadow: 0 " + std::to_string(s.px(6)) + "px " + std::to_string(s.px(10)) + "px rgba(0, 0, 0, 0.4);\n"
         "}\n"
         "#main-btn-paid:active {\n"
         "    background-color: " + active + ";\n"
         "    background-image: none;\n"
-        "    background: " + active + ";\n"
         "    box-shadow: 0 " + std::to_string(s.px(1)) + "px " + std::to_string(s.px(3)) + "px rgba(0, 0, 0, 0.25);\n"
         "    transform: translateY(" + std::to_string(s.px(2)) + "px);\n"
         "}\n";
     m_paid_css_provider->load_from_data(css);
+}
+
+void MainWindow::reset_sale()
+{
+    // Alle Artikelmengen und den eingegebenen Betrag für den nächsten Kassiervorgang zurücksetzen
+    for (auto& btn : m_article_buttons) {
+        btn->reset_amount();
+    }
+    m_received_amount = 0.0;
+    update_overview();
 }
 
 void MainWindow::on_received_amount_clicked()
@@ -388,21 +390,13 @@ void MainWindow::on_paid_clicked()
         return;
     }
 
-    // Buchung abschließen: alle Artikelzähler und erhaltenen Betrag zurücksetzen
-    for (auto& btn : m_article_buttons) {
-        btn->reset_amount();
-    }
-    m_received_amount = 0.0;
-    update_overview();
+    // Buchung abschließen: Verkauf zurücksetzen
+    reset_sale();
 }
 
 void MainWindow::on_cancel_clicked()
 {
-    // Buchung abbrechen: alle Artikelzähler und erhaltenen Betrag zurücksetzen
-    for (auto& btn : m_article_buttons) {
-        btn->reset_amount();
-    }
-    m_received_amount = 0.0;
-    update_overview();
+    // Buchung abbrechen: Verkauf zurücksetzen
+    reset_sale();
 }
 

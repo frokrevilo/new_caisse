@@ -136,8 +136,8 @@ Custom button widget inheriting from `Gtk::Button`:
 ## 5. Build System & Tooling
 
 The [`Makefile`](file:///home/oliver/Development/c++/gtk/caisse/Makefile) uses standard GNU Make with aggressive size optimizations:
-- `-Os -flto -ffunction-sections -fdata-sections -Wl,--gc-sections -Wl,--as-needed -Wl,-s`
-- Generates a standalone, fully-featured binary of ~136 KB.
+- `-Os -flto=auto -ffunction-sections -fdata-sections -Wl,--gc-sections -Wl,--as-needed -Wl,-s`
+- Generates a standalone, fully-featured binary of ~156 KB.
 
 Commands:
 ```bash

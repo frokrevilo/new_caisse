@@ -33,6 +33,16 @@ CashInputDialog::CashInputDialog(Gtk::Window& parent, double total_due, double c
     update_display();
 }
 
+CashInputDialog::~CashInputDialog()
+{
+    // Display-weiten Style-Provider sauber abmelden (direkt über den Standard-Display,
+    // da das Window im Destruktor bereits entkoppelt/unrooted sein kann)
+    auto display = Gdk::Display::get_default();
+    if (display && m_css_provider) {
+        Gtk::StyleProvider::remove_provider_for_display(display, m_css_provider);
+    }
+}
+
 sigc::signal<void(double)>& CashInputDialog::signal_amount_confirmed()
 {
     return m_signal_amount_confirmed;
@@ -124,7 +134,6 @@ void CashInputDialog::setup_ui()
         btn->set_hexpand(true);
         btn->set_vexpand(true);
         btn->add_css_class("keypad-btn");
-        btn->get_style_context()->add_provider(m_css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
 
         if (k.type == KeyDef::CLEAR) {
             btn->set_name("btn-clr");
@@ -154,7 +163,6 @@ void CashInputDialog::setup_ui()
     m_lbl_cancel.set_markup("<span size='" + s.pt_str(18) + "' weight='bold' foreground='#ffffff'>✕  Abbrechen</span>");
     m_btn_cancel.set_child(m_lbl_cancel);
     m_btn_cancel.signal_clicked().connect(sigc::mem_fun(*this, &CashInputDialog::on_cancel_clicked));
-    m_btn_cancel.get_style_context()->add_provider(m_css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
     m_action_box.append(m_btn_cancel);
 
     m_btn_confirm.set_name("btn-dialog-confirm");
@@ -164,7 +172,6 @@ void CashInputDialog::setup_ui()
     m_lbl_confirm.set_markup("<span size='" + s.pt_str(18) + "' weight='bold' foreground='#ffffff'>✓  Übernehmen</span>");
     m_btn_confirm.set_child(m_lbl_confirm);
     m_btn_confirm.signal_clicked().connect(sigc::mem_fun(*this, &CashInputDialog::on_confirm_clicked));
-    m_btn_confirm.get_style_context()->add_provider(m_css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
     m_action_box.append(m_btn_confirm);
 
     m_root_box.append(m_action_box);
@@ -172,7 +179,7 @@ void CashInputDialog::setup_ui()
     set_child(m_root_box);
 
     // 6. CSS Styling
-    // ID-Selektoren (#name) benötigen den globalen Display-Provider, damit sie greifen.
+    // Über den Display-weiten Provider greifen Klassen- und ID-Selektoren für das gesamte Dialogfenster.
     const std::string css =
         "window, dialog {\n"
         "    background-color: #0f172a;\n"
@@ -189,7 +196,6 @@ void CashInputDialog::setup_ui()
         "    border-radius: " + std::to_string(s.px(12)) + "px;\n"
         "    background-color: #f1f5f9;\n"
         "    background-image: none;\n"
-        "    background: #f1f5f9;\n"
         "    color: #0f172a;\n"
         "    border: 1px solid rgba(0, 0, 0, 0.2);\n"
         "    box-shadow: 0 " + std::to_string(s.px(4)) + "px " + std::to_string(s.px(6)) + "px rgba(0, 0, 0, 0.25);\n"
@@ -198,7 +204,6 @@ void CashInputDialog::setup_ui()
         ".keypad-btn:hover {\n"
         "    background-color: #e2e8f0;\n"
         "    background-image: none;\n"
-        "    background: #e2e8f0;\n"
         "    box-shadow: 0 " + std::to_string(s.px(5)) + "px " + std::to_string(s.px(8)) + "px rgba(0, 0, 0, 0.3);\n"
         "}\n"
         ".keypad-btn:active {\n"
@@ -206,80 +211,68 @@ void CashInputDialog::setup_ui()
         "    transform: translateY(" + std::to_string(s.px(2)) + "px);\n"
         "    background-color: #cbd5e1;\n"
         "    background-image: none;\n"
-        "    background: #cbd5e1;\n"
         "}\n"
-        "#btn-clr {\n"
+        ".keypad-btn-clr, #btn-clr {\n"
         "    background-color: #dc2626;\n"
         "    background-image: none;\n"
-        "    background: #dc2626;\n"
         "    color: #ffffff;\n"
         "    border-radius: " + std::to_string(s.px(12)) + "px;\n"
         "    border: 1px solid rgba(0, 0, 0, 0.2);\n"
         "    box-shadow: 0 " + std::to_string(s.px(4)) + "px " + std::to_string(s.px(6)) + "px rgba(0, 0, 0, 0.35);\n"
         "}\n"
-        "#btn-clr:hover {\n"
+        ".keypad-btn-clr:hover, #btn-clr:hover {\n"
         "    background-color: #ef4444;\n"
         "    background-image: none;\n"
-        "    background: #ef4444;\n"
         "    box-shadow: 0 " + std::to_string(s.px(5)) + "px " + std::to_string(s.px(8)) + "px rgba(0, 0, 0, 0.4);\n"
         "}\n"
-        "#btn-clr:active {\n"
+        ".keypad-btn-clr:active, #btn-clr:active {\n"
         "    background-color: #b91c1c;\n"
         "    background-image: none;\n"
-        "    background: #b91c1c;\n"
         "    box-shadow: 0 " + std::to_string(s.px(1)) + "px " + std::to_string(s.px(3)) + "px rgba(0, 0, 0, 0.25);\n"
         "    transform: translateY(" + std::to_string(s.px(2)) + "px);\n"
         "}\n"
-        "#btn-dialog-cancel {\n"
+        ".btn-dialog-cancel, #btn-dialog-cancel {\n"
         "    border-radius: " + std::to_string(s.px(12)) + "px;\n"
         "    background-color: #dc2626;\n"
         "    background-image: none;\n"
-        "    background: #dc2626;\n"
         "    color: #ffffff;\n"
         "    border: 1px solid rgba(0, 0, 0, 0.2);\n"
         "    box-shadow: 0 " + std::to_string(s.px(4)) + "px " + std::to_string(s.px(6)) + "px rgba(0, 0, 0, 0.35);\n"
         "    transition: all 120ms ease;\n"
         "}\n"
-        "#btn-dialog-cancel:hover {\n"
+        ".btn-dialog-cancel:hover, #btn-dialog-cancel:hover {\n"
         "    background-color: #ef4444;\n"
         "    background-image: none;\n"
-        "    background: #ef4444;\n"
         "    box-shadow: 0 " + std::to_string(s.px(5)) + "px " + std::to_string(s.px(8)) + "px rgba(0, 0, 0, 0.4);\n"
         "}\n"
-        "#btn-dialog-cancel:active {\n"
+        ".btn-dialog-cancel:active, #btn-dialog-cancel:active {\n"
         "    transform: translateY(" + std::to_string(s.px(2)) + "px);\n"
         "    background-color: #b91c1c;\n"
         "    background-image: none;\n"
-        "    background: #b91c1c;\n"
         "    box-shadow: 0 " + std::to_string(s.px(1)) + "px " + std::to_string(s.px(3)) + "px rgba(0, 0, 0, 0.25);\n"
         "}\n"
-        "#btn-dialog-confirm {\n"
+        ".btn-dialog-confirm, #btn-dialog-confirm {\n"
         "    border-radius: " + std::to_string(s.px(12)) + "px;\n"
         "    background-color: #16a34a;\n"
         "    background-image: none;\n"
-        "    background: #16a34a;\n"
         "    color: #ffffff;\n"
         "    border: 1px solid rgba(0, 0, 0, 0.2);\n"
         "    box-shadow: 0 " + std::to_string(s.px(4)) + "px " + std::to_string(s.px(6)) + "px rgba(0, 0, 0, 0.35);\n"
         "    transition: all 120ms ease;\n"
         "}\n"
-        "#btn-dialog-confirm:hover {\n"
+        ".btn-dialog-confirm:hover, #btn-dialog-confirm:hover {\n"
         "    background-color: #22c55e;\n"
         "    background-image: none;\n"
-        "    background: #22c55e;\n"
         "    box-shadow: 0 " + std::to_string(s.px(5)) + "px " + std::to_string(s.px(8)) + "px rgba(0, 0, 0, 0.4);\n"
         "}\n"
-        "#btn-dialog-confirm:active {\n"
+        ".btn-dialog-confirm:active, #btn-dialog-confirm:active {\n"
         "    transform: translateY(" + std::to_string(s.px(2)) + "px);\n"
         "    background-color: #15803d;\n"
         "    background-image: none;\n"
-        "    background: #15803d;\n"
         "    box-shadow: 0 " + std::to_string(s.px(1)) + "px " + std::to_string(s.px(3)) + "px rgba(0, 0, 0, 0.25);\n"
         "}\n";
     m_css_provider->load_from_data(css);
-    get_style_context()->add_provider(m_css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
 
-    // ID-Selektoren (#name) matchen NUR wenn der Provider global am Display registriert ist!
     auto display = Gdk::Display::get_default();
     if (display) {
         Gtk::StyleProvider::add_provider_for_display(display, m_css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
@@ -303,8 +296,7 @@ void CashInputDialog::setup_ui()
             }
             if (keyval == GDK_KEY_BackSpace) {
                 if (m_replace_on_input) {
-                    m_raw_input.clear();
-                    m_replace_on_input = false;
+                    check_replace_on_input();
                     update_display();
                 } else if (!m_raw_input.empty()) {
                     m_raw_input.pop_back();
@@ -329,6 +321,14 @@ void CashInputDialog::setup_ui()
         false
     );
     add_controller(key_ctrl);
+}
+
+void CashInputDialog::check_replace_on_input()
+{
+    if (m_replace_on_input) {
+        m_raw_input.clear();
+        m_replace_on_input = false;
+    }
 }
 
 void CashInputDialog::update_display()
@@ -361,10 +361,7 @@ void CashInputDialog::update_display()
 
 void CashInputDialog::on_digit_clicked(char digit)
 {
-    if (m_replace_on_input) {
-        m_raw_input.clear();
-        m_replace_on_input = false;
-    }
+    check_replace_on_input();
 
     if (m_raw_input == "0" && digit != '0') {
         m_raw_input.clear();
@@ -389,10 +386,7 @@ void CashInputDialog::on_digit_clicked(char digit)
 
 void CashInputDialog::on_comma_clicked()
 {
-    if (m_replace_on_input) {
-        m_raw_input.clear();
-        m_replace_on_input = false;
-    }
+    check_replace_on_input();
 
     if (m_raw_input.empty()) {
         m_raw_input = "0,";
