@@ -77,7 +77,7 @@ void ArticleButton::setup_ui()
     m_btn_plus.set_vexpand(false);
     m_btn_plus.set_halign(Gtk::Align::CENTER);
     m_btn_plus.set_valign(Gtk::Align::END);
-    m_btn_plus.set_size_request(s.px(120), s.px(120));
+    m_btn_plus.set_size_request(s.px(150), s.px(100));
     m_lbl_plus.set_can_target(false);
     m_lbl_plus.set_halign(Gtk::Align::CENTER);
     m_lbl_plus.set_valign(Gtk::Align::CENTER);
