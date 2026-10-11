@@ -51,9 +51,7 @@ private:
     Gtk::Grid m_root_grid;
 
     // Linke Seite: 4x5 Artikel-Matrix
-    Gtk::Box m_left_container{Gtk::Orientation::VERTICAL, 8};
-    Gtk::Box m_left_header{Gtk::Orientation::HORIZONTAL, 12};
-    Gtk::Label m_matrix_title;
+    Gtk::Box m_left_container{Gtk::Orientation::VERTICAL, 0};
     Gtk::Grid m_matrix_grid;
     std::vector<std::unique_ptr<ArticleButton>> m_article_buttons;
 

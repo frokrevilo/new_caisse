@@ -39,13 +39,8 @@ void MainWindow::setup_ui()
     // ============================================================
     m_left_container.set_hexpand(true);
     m_left_container.set_vexpand(true);
-    m_left_container.set_spacing(s.px(8));
-
-    m_matrix_title.set_markup("<span size='" + s.pt_str(18) + "' weight='bold'>Kassensystem — Artikel</span>");
-    m_matrix_title.set_halign(Gtk::Align::START);
-    m_left_header.set_spacing(s.px(12));
-    m_left_header.append(m_matrix_title);
-    m_left_container.append(m_left_header);
+    m_left_container.set_spacing(0);
+    m_left_container.add_css_class("matrix-container");
 
     // 4 Spalten × 5 Reihen Grid
     m_matrix_grid.set_row_spacing(s.px(10));
@@ -63,7 +58,7 @@ void MainWindow::setup_ui()
     // ============================================================
     m_right_panel.set_hexpand(true);
     m_right_panel.set_vexpand(true);
-    m_right_panel.set_spacing(s.px(14));
+    m_right_panel.set_spacing(s.px(10));
     m_right_panel.add_css_class("checkout-panel");
 
     m_panel_title.set_markup("<span size='" + s.pt_str(24) + "' weight='bold' foreground='#ffffff'>Abrechnung</span>");
@@ -72,7 +67,7 @@ void MainWindow::setup_ui()
 
     // 1. Karte: Gesamtpreis
     m_card_total.add_css_class("overview-card");
-    m_card_total.set_spacing(s.px(6));
+    m_card_total.set_spacing(s.px(4));
     m_lbl_total_title.set_markup("<span size='" + s.pt_str(15) + "' weight='bold' foreground='#94a3b8'>GESAMTPREIS</span>");
     m_lbl_total_title.set_halign(Gtk::Align::CENTER);
     m_card_total.append(m_lbl_total_title);
@@ -86,7 +81,7 @@ void MainWindow::setup_ui()
 
     // 2. Karte: Erhaltener Betrag (Tippen öffnet Eingabedialog)
     m_card_received.add_css_class("overview-card");
-    m_card_received.set_spacing(s.px(6));
+    m_card_received.set_spacing(s.px(4));
     m_lbl_received_title.set_markup("<span size='" + s.pt_str(15) + "' weight='bold' foreground='#94a3b8'>ERHALTENER BETRAG</span>");
     m_lbl_received_title.set_halign(Gtk::Align::CENTER);
     m_card_received.append(m_lbl_received_title);
@@ -100,7 +95,7 @@ void MainWindow::setup_ui()
 
     // 3. Karte: Rückgeld
     m_card_change.add_css_class("overview-card");
-    m_card_change.set_spacing(s.px(6));
+    m_card_change.set_spacing(s.px(4));
     m_lbl_change_title.set_markup("<span size='" + s.pt_str(15) + "' weight='bold' foreground='#94a3b8'>RÜCKGELD</span>");
     m_lbl_change_title.set_halign(Gtk::Align::CENTER);
     m_card_change.append(m_lbl_change_title);
@@ -115,9 +110,9 @@ void MainWindow::setup_ui()
 
     // 4. Aktions-Knopf: BEZAHLT (rot solange Betrag unzureichend, grün sobald Betrag ausreicht)
     m_btn_paid.set_name("main-btn-paid");           // Eindeutige Widget-ID für CSS #main-btn-paid
-    m_btn_paid.set_size_request(-1, s.px(80));
-    m_btn_paid.set_margin_bottom(s.px(28));
-    m_lbl_paid.set_markup("<span size='" + s.pt_str(22) + "' weight='bold' foreground='#ffffff'>✓  BEZAHLT</span>");
+    m_btn_paid.set_size_request(-1, s.px(120));
+    m_btn_paid.set_margin_bottom(s.px(12));
+    m_lbl_paid.set_markup("<span size='" + s.pt_str(30) + "' weight='bold' foreground='#ffffff'>✓  BEZAHLT</span>");
     m_btn_paid.set_child(m_lbl_paid);
     m_btn_paid.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_paid_clicked));
     m_paid_css_provider = Gtk::CssProvider::create();
@@ -167,6 +162,13 @@ void MainWindow::setup_ui()
     // ============================================================
     m_css_provider = Gtk::CssProvider::create();
     const std::string css =
+        "window, dialog {\n"
+        "    background-color: #0f172a;\n"
+        "    color: #f8fafc;\n"
+        "}\n"
+        ".matrix-container {\n"
+        "    background-color: #0f172a;\n"
+        "}\n"
         ".checkout-panel {\n"
         "    background-color: #1e293b;\n"
         "    border-radius: " + std::to_string(s.px(14)) + "px;\n"

@@ -63,17 +63,20 @@ void ScaleHelper::init_from_display(const Glib::RefPtr<Gdk::Display>& display)
         try {
             auto monitors = display->get_monitors();
             if (monitors && monitors->get_n_items() > 0) {
-                auto monitor = std::dynamic_pointer_cast<Gdk::Monitor>(monitors->get_object(0));
-                if (monitor) {
-                    Gdk::Rectangle rect;
-                    monitor->get_geometry(rect);
-                    if (rect.get_width() > 0 && rect.get_height() > 0) {
-                        set_resolution(rect.get_width(), rect.get_height());
-                        std::cout << "[ScaleHelper] Monitor erkannt: "
-                                  << rect.get_width() << "x" << rect.get_height()
-                                  << " -> Skalierungsfaktor: " << m_factor << std::endl;
-                        m_initialized = true;
-                        return;
+                for (guint i = 0; i < monitors->get_n_items(); ++i) {
+                    auto obj = monitors->get_object(i);
+                    auto monitor = std::dynamic_pointer_cast<Gdk::Monitor>(obj);
+                    if (monitor) {
+                        Gdk::Rectangle rect;
+                        monitor->get_geometry(rect);
+                        if (rect.get_width() > 0 && rect.get_height() > 0) {
+                            set_resolution(rect.get_width(), rect.get_height());
+                            std::cout << "[ScaleHelper] Monitor erkannt: "
+                                      << rect.get_width() << "x" << rect.get_height()
+                                      << " -> Skalierungsfaktor: " << m_factor << std::endl;
+                            m_initialized = true;
+                            return;
+                        }
                     }
                 }
             }

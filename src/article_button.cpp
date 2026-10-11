@@ -36,6 +36,7 @@ void ArticleButton::setup_ui()
     m_css_id = "article-tile-" + std::to_string(++s_counter);
     set_name(m_css_id);
     add_css_class("article-tile");
+    add_css_class(m_css_id);
 
     set_size_request(s.px(130), s.px(90));
     set_hexpand(true);
@@ -64,19 +65,19 @@ void ArticleButton::setup_ui()
 
     // 2. Button-Bereich: Touch-freundlicher Hauptbutton (+) und Dekrement-Button (-)
     m_button_box.add_css_class("button-container");
-    m_button_box.set_spacing(s.px(40));
+    m_button_box.set_spacing(s.px(24));
     m_button_box.set_halign(Gtk::Align::CENTER);
     m_button_box.set_valign(Gtk::Align::CENTER);
     m_button_box.set_hexpand(true);
     m_button_box.set_vexpand(true);
 
-    // Haupt-Inkrement-Button (+) - quadratisch, touch-optimiert
+    // Haupt-Inkrement-Button (+) - touch-optimiert
     m_btn_plus.add_css_class("btn-plus");
     m_btn_plus.set_hexpand(false);
     m_btn_plus.set_vexpand(false);
     m_btn_plus.set_halign(Gtk::Align::CENTER);
     m_btn_plus.set_valign(Gtk::Align::END);
-    m_btn_plus.set_size_request(s.px(140), s.px(100));
+    m_btn_plus.set_size_request(s.px(120), s.px(120));
     m_lbl_plus.set_can_target(false);
     m_lbl_plus.set_halign(Gtk::Align::CENTER);
     m_lbl_plus.set_valign(Gtk::Align::CENTER);
@@ -84,13 +85,13 @@ void ArticleButton::setup_ui()
     m_btn_plus.signal_clicked().connect(sigc::mem_fun(*this, &ArticleButton::on_plus_clicked));
     m_button_box.append(m_btn_plus);
 
-    // Dekrement-Button (-) - quadratisch, touch-optimiert
+    // Dekrement-Button (-) - touch-optimiert
     m_btn_minus.add_css_class("btn-minus");
     m_btn_minus.set_hexpand(false);
     m_btn_minus.set_vexpand(false);
     m_btn_minus.set_halign(Gtk::Align::CENTER);
     m_btn_minus.set_valign(Gtk::Align::END);
-    m_btn_minus.set_size_request(s.px(80), s.px(80));
+    m_btn_minus.set_size_request(s.px(75), s.px(75));
     m_lbl_minus.set_can_target(false);
     m_lbl_minus.set_halign(Gtk::Align::CENTER);
     m_lbl_minus.set_valign(Gtk::Align::CENTER);
@@ -408,16 +409,6 @@ void ArticleButton::update_style()
         << "    filter: brightness(0.92);\n"
         << "    box-shadow: 0 " << s.px(1) << "px " << s.px(2) << "px rgba(0, 0, 0, 0.15);\n"
         << "}\n";
-
-    // Badge für Klickzähler
-    // const bool active = (m_amount > 0);
-    // const bool light_bg = is_light_color(color_plus);
-    // const std::string badge_bg = active 
-    //     ? (light_bg ? "rgba(0, 0, 0, 0.75)" : "rgba(255, 255, 255, 0.90)")
-    //     : (light_bg ? "rgba(0, 0, 0, 0.18)" : "rgba(255, 255, 255, 0.22)");
-    // const std::string badge_fg = active
-    //     ? (light_bg ? "#ffffff" : "#0f172a")
-    //     : (light_bg ? "#0f172a" : "#ffffff");
 
     css << "#" << m_css_id << " .article-badge, .article-badge {\n"
         << "    border-radius: " << s.px(8) << "px;\n"
