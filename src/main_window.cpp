@@ -1,5 +1,6 @@
 #include "main_window.hpp"
 #include "scale_helper.hpp"
+#include "sales_logger.hpp"
 #include <gdk/gdkkeysyms.h>
 #include <gtkmm/eventcontrollerkey.h>
 #include <cmath>
@@ -391,6 +392,9 @@ void MainWindow::on_paid_clicked()
         on_received_amount_clicked();
         return;
     }
+
+    // Verkauf im Tages-Logfile protokollieren
+    SalesLogger::log_sale(m_article_buttons, m_total_price);
 
     // Buchung abschließen: Verkauf zurücksetzen
     reset_sale();

@@ -34,7 +34,9 @@ caisse/
     ├── article_config.hpp  # Article configuration struct & YAML loader header
     ├── article_config.cpp  # Pure C++ YAML parser (no external library dependencies)
     ├── cash_input_dialog.hpp # Keypad modal dialog (789/456/123/0,CLR) header
-    └── cash_input_dialog.cpp # Keypad modal dialog implementation & shortcuts
+    ├── cash_input_dialog.cpp # Keypad modal dialog implementation & shortcuts
+    ├── sales_logger.hpp    # Daily CSV sales log manager header
+    └── sales_logger.cpp    # Daily CSV sales log manager implementation
 ```
 
 > **Note on Build Artifacts:**  
@@ -119,6 +121,15 @@ Custom tile component widget inheriting from `Gtk::Box`:
   - The configured article color (`color_plus`) extends seamlessly across the entire tile background up to the outer border.
   - Automatic contrast adjustment for typography and badges (white text on dark colors, dark text on bright colors).
   - 3D tactile elevation with hover effects and active click depression.
+
+### 3.6 `src/sales_logger.hpp` / `src/sales_logger.cpp`
+- Automatically logs every completed sale upon clicking "BEZAHLT" (`on_paid_clicked()`).
+- **Filename convention:** `yyyy-mm-dd_overview_sales.csv` (e.g. `2026-10-11_overview_sales.csv`).
+- **Delimiter:** Semicolon (`;`).
+- **Header:** Automatically generated if file does not exist or is empty:
+  `time;article_name_1;...;article_name_20;total`
+- **Data Rows:**
+  `HH:MM:SS;count_1;...;count_20;total_price` (Total formatted with comma, e.g. `22,35`).
 
 ---
 
