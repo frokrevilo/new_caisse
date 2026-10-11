@@ -414,10 +414,26 @@ double CashInputDialog::parse_input_to_double() const
     if (m_raw_input.empty()) {
         return 0.0;
     }
-    std::string str = m_raw_input;
-    std::replace(str.begin(), str.end(), ',', '.');
+    const auto sep_pos = m_raw_input.find_first_of(",.");
     try {
-        return std::stod(str);
+        if (sep_pos == std::string::npos) {
+            return static_cast<double>(std::stoll(m_raw_input));
+        }
+        const std::string euro_part = m_raw_input.substr(0, sep_pos);
+        const std::string cent_part = m_raw_input.substr(sep_pos + 1);
+
+        long long euros = euro_part.empty() ? 0 : std::stoll(euro_part);
+        long long cents = 0;
+        if (!cent_part.empty()) {
+            if (cent_part.length() == 1) {
+                cents = std::stoll(cent_part) * 10;
+            } else if (cent_part.length() == 2) {
+                cents = std::stoll(cent_part);
+            } else {
+                cents = std::stoll(cent_part.substr(0, 2));
+            }
+        }
+        return static_cast<double>(euros) + static_cast<double>(cents) / 100.0;
     } catch (...) {
         return 0.0;
     }

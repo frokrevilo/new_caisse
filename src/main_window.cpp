@@ -3,9 +3,13 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtkmm/eventcontrollerkey.h>
 #include <cmath>
+#include <clocale>
 
 MainWindow::MainWindow()
 {
+    // Standard-Dezimalpunkt (.) für C/C++ Bibliotheksfunktionen sicherstellen
+    std::setlocale(LC_NUMERIC, "C");
+
     // Fullscreen-Modus aktivieren
     fullscreen();
 

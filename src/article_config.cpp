@@ -101,6 +101,31 @@ void parse_position_string(const std::string& val, int& x, int& y) {
     }
 }
 
+double parse_price_value(const std::string& raw) {
+    std::string s = strip_quotes(raw);
+    if (s.empty()) return 0.0;
+    const auto sep_pos = s.find_first_of(",.");
+    try {
+        if (sep_pos == std::string::npos) {
+            return static_cast<double>(std::stoll(s));
+        }
+        const std::string euro_part = s.substr(0, sep_pos);
+        const std::string cent_part = s.substr(sep_pos + 1);
+        long long euros = euro_part.empty() ? 0 : std::stoll(euro_part);
+        double cents = 0.0;
+        if (!cent_part.empty()) {
+            double denom = 1.0;
+            for (size_t i = 0; i < cent_part.size(); ++i) {
+                denom *= 10.0;
+            }
+            cents = static_cast<double>(std::stoll(cent_part)) / denom;
+        }
+        return static_cast<double>(euros) + cents;
+    } catch (...) {
+        return 0.0;
+    }
+}
+
 } // namespace
 
 bool create_default_articles_yaml(const std::string& filepath) {
@@ -260,9 +285,7 @@ std::vector<ArticleConfig> load_articles_from_yaml(const std::string& filepath) 
         if (key == "artikelname" || key == "name" || key == "titel" || key == "bezeichnung") {
             current.name = strip_quotes(val);
         } else if (key == "artikelpreis" || key == "preis" || key == "price") {
-            std::string price_str = strip_quotes(val);
-            std::replace(price_str.begin(), price_str.end(), ',', '.');
-            try { current.price = std::stod(price_str); } catch (...) {}
+            current.price = parse_price_value(val);
         } else if (key == "farbe" || key == "color" || key == "colour") {
             current.color = strip_quotes(val);
         } else if (key == "sichtbarkeit" || key == "sichtbar" || key == "visible" || key == "visibility") {
