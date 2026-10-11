@@ -23,7 +23,7 @@ articles:
   - artikelname: "Kaffee"
     artikelpreis: 2.50
     farbe: "#8B5A2B"
-    sichtbarkeit: true
+    sichtbarkeit: false
     position: [0, 1]
 
   - artikelname: "Cappuccino"

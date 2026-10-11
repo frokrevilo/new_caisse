@@ -15,7 +15,7 @@ CashInputDialog::CashInputDialog(Gtk::Window& parent, double total_due, double c
     set_transient_for(parent);
     set_modal(true);
     set_title("Erhaltener Betrag");
-    set_default_size(s.px(460), s.px(640));
+    set_default_size(s.px(600), s.px(900));
     set_resizable(false);
 
     if (current_received > 0.0) {
@@ -52,18 +52,18 @@ void CashInputDialog::setup_ui()
 {
     auto& s = ScaleHelper::instance();
 
-    m_root_box.set_margin_start(s.px(24));
-    m_root_box.set_margin_end(s.px(24));
-    m_root_box.set_margin_top(s.px(20));
-    m_root_box.set_margin_bottom(s.px(20));
-    m_root_box.set_spacing(s.px(16));
+    m_root_box.set_margin_start(s.px(28));
+    m_root_box.set_margin_end(s.px(28));
+    m_root_box.set_margin_top(s.px(24));
+    m_root_box.set_margin_bottom(s.px(24));
+    m_root_box.set_spacing(s.px(20));
 
     // 1. Kopfzeile: Titel und Zu zahlender Betrag
-    m_header_label.set_markup("<span size='" + s.pt_str(20) + "' weight='bold' foreground='#ffffff'>Erhaltener Betrag</span>");
+    m_header_label.set_markup("<span size='" + s.pt_str(26) + "' weight='bold' foreground='#ffffff'>Erhaltener Betrag</span>");
     m_root_box.append(m_header_label);
 
     const std::string due_str = ArticleButton::format_currency(m_total_due).raw();
-    m_due_label.set_markup("<span size='" + s.pt_str(15) + "' foreground='#94a3b8'>Zu zahlen: <b>" + due_str + "</b></span>");
+    m_due_label.set_markup("<span size='" + s.pt_str(20) + "' foreground='#94a3b8'>Zu zahlen: <b>" + due_str + "</b></span>");
     m_root_box.append(m_due_label);
 
     // 2. Eingabe- & Rückgeld-Anzeigekarte
@@ -80,15 +80,17 @@ void CashInputDialog::setup_ui()
 
     m_root_box.append(m_display_card);
 
-    // 4. Ziffernblock (4 Zeilen x 3 Spalten) - Groß, fett und gut lesbar
+    // 4. Ziffernblock (4 Zeilen x 3 Spalten) - Quadratische Tasten
     // 7 8 9
     // 4 5 6
     // 1 2 3
     // 0 , CLR
-    m_keypad_grid.set_row_spacing(s.px(12));
-    m_keypad_grid.set_column_spacing(s.px(12));
+    m_keypad_grid.set_row_spacing(s.px(16));
+    m_keypad_grid.set_column_spacing(s.px(16));
     m_keypad_grid.set_row_homogeneous(true);
     m_keypad_grid.set_column_homogeneous(true);
+    m_keypad_grid.set_halign(Gtk::Align::CENTER);
+    m_keypad_grid.set_valign(Gtk::Align::CENTER);
     m_keypad_grid.set_hexpand(true);
     m_keypad_grid.set_vexpand(true);
 
@@ -118,21 +120,25 @@ void CashInputDialog::setup_ui()
 
     m_css_provider = Gtk::CssProvider::create();
 
+    const int key_size = s.px(110);
+
     for (const auto& k : keys) {
         auto* btn = Gtk::make_managed<Gtk::Button>();
         auto* lbl = Gtk::make_managed<Gtk::Label>();
 
         if (k.type == KeyDef::CLEAR) {
-            lbl->set_markup("<span size='" + s.pt_str(24) + "' weight='bold' foreground='#ffffff'>CLR</span>");
+            lbl->set_markup("<span size='" + s.pt_str(30) + "' weight='bold' foreground='#ffffff'>CLR</span>");
         } else if (k.type == KeyDef::COMMA) {
-            lbl->set_markup("<span size='" + s.pt_str(34) + "' weight='bold' foreground='#0f172a'>,</span>");
+            lbl->set_markup("<span size='" + s.pt_str(44) + "' weight='bold' foreground='#0f172a'>,</span>");
         } else {
-            lbl->set_markup("<span size='" + s.pt_str(30) + "' weight='bold' foreground='#0f172a'>" + std::string(k.label) + "</span>");
+            lbl->set_markup("<span size='" + s.pt_str(38) + "' weight='bold' foreground='#0f172a'>" + std::string(k.label) + "</span>");
         }
         btn->set_child(*lbl);
-        btn->set_size_request(-1, s.px(74));
-        btn->set_hexpand(true);
-        btn->set_vexpand(true);
+        btn->set_size_request(key_size, key_size);
+        btn->set_hexpand(false);
+        btn->set_vexpand(false);
+        btn->set_halign(Gtk::Align::CENTER);
+        btn->set_valign(Gtk::Align::CENTER);
         btn->add_css_class("keypad-btn");
 
         if (k.type == KeyDef::CLEAR) {
@@ -154,22 +160,22 @@ void CashInputDialog::setup_ui()
 
     // 5. Aktionen: Abbrechen / Übernehmen (Groß und gut lesbar)
     m_action_box.set_halign(Gtk::Align::FILL);
-    m_action_box.set_spacing(s.px(14));
+    m_action_box.set_spacing(s.px(18));
 
     m_btn_cancel.set_name("btn-dialog-cancel");
     m_btn_cancel.set_hexpand(true);
-    m_btn_cancel.set_size_request(-1, s.px(62));
+    m_btn_cancel.set_size_request(-1, s.px(76));
     m_btn_cancel.add_css_class("btn-dialog-cancel");
-    m_lbl_cancel.set_markup("<span size='" + s.pt_str(18) + "' weight='bold' foreground='#ffffff'>✕  Abbrechen</span>");
+    m_lbl_cancel.set_markup("<span size='" + s.pt_str(22) + "' weight='bold' foreground='#ffffff'>✕  Abbrechen</span>");
     m_btn_cancel.set_child(m_lbl_cancel);
     m_btn_cancel.signal_clicked().connect(sigc::mem_fun(*this, &CashInputDialog::on_cancel_clicked));
     m_action_box.append(m_btn_cancel);
 
     m_btn_confirm.set_name("btn-dialog-confirm");
     m_btn_confirm.set_hexpand(true);
-    m_btn_confirm.set_size_request(-1, s.px(62));
+    m_btn_confirm.set_size_request(-1, s.px(76));
     m_btn_confirm.add_css_class("btn-dialog-confirm");
-    m_lbl_confirm.set_markup("<span size='" + s.pt_str(18) + "' weight='bold' foreground='#ffffff'>✓  Übernehmen</span>");
+    m_lbl_confirm.set_markup("<span size='" + s.pt_str(22) + "' weight='bold' foreground='#ffffff'>✓  Übernehmen</span>");
     m_btn_confirm.set_child(m_lbl_confirm);
     m_btn_confirm.signal_clicked().connect(sigc::mem_fun(*this, &CashInputDialog::on_confirm_clicked));
     m_action_box.append(m_btn_confirm);
@@ -340,22 +346,22 @@ void CashInputDialog::update_display()
     } else {
         text = m_raw_input + " €";
     }
-    m_display_label.set_markup("<span size='" + s.pt_str(30) + "' weight='bold' foreground='#38bdf8'>" + text + "</span>");
+    m_display_label.set_markup("<span size='" + s.pt_str(38) + "' weight='bold' foreground='#38bdf8'>" + text + "</span>");
 
     const double received = parse_input_to_double();
     const long long received_cents = std::lround(received * 100.0);
     const long long due_cents = std::lround(m_total_due * 100.0);
 
     if (received_cents <= 0 && due_cents <= 0) {
-        m_change_label.set_markup("<span size='" + s.pt_str(16) + "' weight='bold' foreground='#94a3b8'>Rückgeld: 0,00 €</span>");
+        m_change_label.set_markup("<span size='" + s.pt_str(20) + "' weight='bold' foreground='#94a3b8'>Rückgeld: 0,00 €</span>");
     } else if (received_cents >= due_cents) {
         const double change = static_cast<double>(received_cents - due_cents) / 100.0;
         const std::string change_str = ArticleButton::format_currency(change).raw();
-        m_change_label.set_markup("<span size='" + s.pt_str(18) + "' weight='bold' foreground='#22c55e'>Rückgeld: " + change_str + "</span>");
+        m_change_label.set_markup("<span size='" + s.pt_str(22) + "' weight='bold' foreground='#22c55e'>Rückgeld: " + change_str + "</span>");
     } else {
         const double missing = static_cast<double>(due_cents - received_cents) / 100.0;
         const std::string missing_str = ArticleButton::format_currency(missing).raw();
-        m_change_label.set_markup("<span size='" + s.pt_str(16) + "' weight='bold' foreground='#ef4444'>Noch offen: " + missing_str + "</span>");
+        m_change_label.set_markup("<span size='" + s.pt_str(20) + "' weight='bold' foreground='#ef4444'>Noch offen: " + missing_str + "</span>");
     }
 }
 

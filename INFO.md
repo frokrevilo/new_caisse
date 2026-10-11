@@ -105,13 +105,20 @@ graph TD
 - Keyboard navigation: Digits, comma/dot, Backspace, Delete, Enter, Escape.
 
 ### 3.5 `src/article_button.hpp` / `src/article_button.cpp`
-Custom button widget inheriting from `Gtk::Button`:
-- **article:** Central product label with word wrap and Pango markup.
-- **color:** Custom background color with automatic contrast detection.
-- **price:** Formatted unit price (top-right).
-- **amount:** Click badge counter (top-left).
-- **long press (>3s):** Resets item amount to 0 and suppresses release click.
-- **3D tactile elevation:** Hover brightness and press-down shadow (`translateY(3px)`).
+Custom tile component widget inheriting from `Gtk::Box`:
+- **Top / Header (`m_header_box`):** 
+  - Central article title label with word wrap and Pango markup, standing prominently on its own.
+- **Center / Action Buttons (`m_button_box`):**
+  - **Increment Button ("+"):** Touch-optimized main button in configured article color.
+  - **Decrement Button ("-"):** Touch-optimized button in subtly lightened variant of article color.
+  - Generous spacing between both buttons for optimal touch ergonomics.
+- **Bottom / Footer (`m_footer_box`):**
+  - **Counter Badge (`m_amount_label`):** Permanent amount badge situated at the bottom-left.
+  - **Unit Price (`m_price_label`):** Formatted unit price situated at the bottom-right.
+- **Whole Tile Styling:**
+  - The configured article color (`color_plus`) extends seamlessly across the entire tile background up to the outer border.
+  - Automatic contrast adjustment for typography and badges (white text on dark colors, dark text on bright colors).
+  - 3D tactile elevation with hover effects and active click depression.
 
 ---
 

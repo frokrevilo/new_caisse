@@ -8,9 +8,9 @@ Ein modernes, touch-optimiertes Point-of-Sale (POS) Kassensystem in C++20 mit `g
   - Bis zu 20 konfigurierbare Artikel-Buttons im flexiblen Raster.
   - Vollständig anpassbar über [`articles.yaml`](file:///home/oliver/Development/c++/gtk/caisse/articles.yaml).
   - Unterstützt `artikelname`, `artikelpreis`, `farbe`, `sichtbarkeit` und `position (x, y)`.
-  - Schlagschatten mit taktilem 3D-Klick-Effekt (`box-shadow`, `translateY(3px)`).
-  - Klickzähler-Badge auf jedem Button.
-  - Langer Tastendruck (>3s) setzt den Zähler für den jeweiligen Artikel auf `0` zurück.
+  - Schlagschatten mit taktilem 3D-Klick-Effekt (`box-shadow`, `translateY(2px)`).
+  - Übersichtlicher Kopfbereich pro Artikel (Artikelname, Preis und Mengen-Badge).
+  - Haupt-Inkrement-Button (`+`) in konfigurierter Artikelfarbe und verkleinerter Dekrement-Button (`-`) in dezent aufgehellter Farbe.
 - **Kassenübersicht & Abrechnung (rechte Seite — 1/4 des Platzes):**
   - Große, gut lesbare Schriftarten für Touch- und Kassendisplays.
   - **Gesamtpreis:** Summiert automatisch alle ausgewählten Artikel in extragroßer Schrift.

@@ -1,29 +1,31 @@
 #pragma once
 
-#include <gtkmm/button.h>
 #include <gtkmm/box.h>
+#include <gtkmm/button.h>
 #include <gtkmm/label.h>
 #include <gtkmm/cssprovider.h>
 #include <glibmm/ustring.h>
 #include <sigc++/sigc++.h>
-#include <memory>
+#include <string>
 
 /**
- * @brief Eine anpassbare Button-Klasse für POS-/Kassensysteme abgeleitet von Gtk::Button.
+ * @brief Artikel-Kachel für das Kassensystem abgeleitet von Gtk::Box.
  *
- * Eigenschaften:
- * - article: Zentrale Artikelbeschriftung (z.B. "Kaffee", "Tee").
- * - color: Farbgebung des Buttons mit automatischer Kontrastanpassung.
- * - price: Einzelpreis, rechtsbündig im oberen Bereich des Buttons.
- * - amount: Klickzähler mit dauerhafter Badge-Anzeige oben links (z. B. "0", "1").
- * - totalprice: Gesamtpreis (amount * price).
- * - long press (>3s): Setzt die Anzahl für diesen Button auf 0 zurück.
+ * Aufbau der Kachel:
+ * - Oben:
+ *   - Artikelname (zentriert, umbrochen, steht für sich alleine)
+ * - Mitte:
+ *   - Haupt-Inkrement-Button ("+"): Verwendet die konfigurierte Artikelfarbe
+ *   - Rechts daneben verkleinerter Dekrement-Button ("-"): Verwendet dieselbe Farbe, aber aufgehellt/dezent
+ * - Unten:
+ *   - Klickzähler / Badge (links unten)
+ *   - Einzelpreis (rechts unten)
  */
-class ArticleButton : public Gtk::Button {
+class ArticleButton : public Gtk::Box {
 public:
     ArticleButton();
     ArticleButton(const Glib::ustring& article, double price, const Glib::ustring& color = "");
-    ~ArticleButton() override;
+    ~ArticleButton() override = default;
 
     // --- Article ---
     void set_article(const Glib::ustring& article);
@@ -50,7 +52,7 @@ public:
     [[nodiscard]] Glib::ustring get_currency_symbol() const;
     static Glib::ustring format_currency(double value, const Glib::ustring& symbol = "€");
 
-    // --- Schriftgrößen (z. B. "200%", "24pt", "14pt", "12pt") ---
+    // --- Schriftgrößen ---
     void set_article_font_size(const Glib::ustring& size);
     [[nodiscard]] Glib::ustring get_article_font_size() const;
 
@@ -60,19 +62,18 @@ public:
     void set_amount_font_size(const Glib::ustring& size);
     [[nodiscard]] Glib::ustring get_amount_font_size() const;
 
-    // --- Langer Tastendruck (>3s) ---
-    void set_long_press_duration_ms(unsigned int ms);
-    [[nodiscard]] unsigned int get_long_press_duration_ms() const;
-    sigc::signal<void()>& signal_long_pressed();
-
-protected:
-    void on_clicked() override;
+    /// Signal wird ausgelöst, wenn "+" oder "-" betätigt wird (Mengenänderung).
+    sigc::signal<void()>& signal_clicked();
 
 private:
     void setup_ui();
     void update_display();
     void update_style();
-    [[nodiscard]] bool is_light_background() const;
+    void on_plus_clicked();
+    void on_minus_clicked();
+
+    [[nodiscard]] static bool is_light_color(const std::string& hex);
+    [[nodiscard]] static std::string lighten_color(const std::string& hex, double factor = 0.40);
 
     // Datenfelder
     Glib::ustring m_article;
@@ -83,22 +84,26 @@ private:
     Glib::ustring m_css_id;
 
     // Standard-Schriftgrößen (proportional durch ScaleHelper initialisiert)
-    Glib::ustring m_article_font_size{"16pt"}; // Artikelbeschriftung
-    Glib::ustring m_price_font_size{"11pt"};    // Preisbeschriftung
-    Glib::ustring m_amount_font_size{"11pt"};   // Klickzähler-Badge
+    Glib::ustring m_article_font_size{"16pt"};
+    Glib::ustring m_price_font_size{"16pt"};
+    Glib::ustring m_amount_font_size{"16pt"};
 
-    // Langer Druck
-    unsigned int m_long_press_duration_ms{2000};
-    bool m_long_press_triggered{false};
-    sigc::connection m_long_press_connection;
-    sigc::signal<void()> m_signal_long_pressed;
+    // Signale
+    sigc::signal<void()> m_signal_clicked;
 
     // UI-Elemente
-    Gtk::Box m_root_box{Gtk::Orientation::VERTICAL};
-    Gtk::Box m_top_box{Gtk::Orientation::HORIZONTAL};
+    Gtk::Box m_header_box{Gtk::Orientation::HORIZONTAL};
+    Gtk::Label m_article_label;
+
+    Gtk::Box m_button_box{Gtk::Orientation::HORIZONTAL};
+    Gtk::Button m_btn_plus;
+    Gtk::Label m_lbl_plus;
+    Gtk::Button m_btn_minus;
+    Gtk::Label m_lbl_minus;
+
+    Gtk::Box m_footer_box{Gtk::Orientation::HORIZONTAL};
     Gtk::Label m_amount_label;
     Gtk::Label m_price_label;
-    Gtk::Label m_article_label;
 
     // Style-Provider für individuelles Button-Styling
     Glib::RefPtr<Gtk::CssProvider> m_css_provider;

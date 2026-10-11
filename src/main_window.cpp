@@ -66,32 +66,33 @@ void MainWindow::setup_ui()
     m_right_panel.set_spacing(s.px(14));
     m_right_panel.add_css_class("checkout-panel");
 
-    m_panel_title.set_markup("<span size='" + s.pt_str(20) + "' weight='bold' foreground='#ffffff'>Abrechnung</span>");
-    m_panel_title.set_halign(Gtk::Align::START);
+    m_panel_title.set_markup("<span size='" + s.pt_str(24) + "' weight='bold' foreground='#ffffff'>Abrechnung</span>");
+    m_panel_title.set_halign(Gtk::Align::CENTER);
     m_right_panel.append(m_panel_title);
 
     // 1. Karte: Gesamtpreis
     m_card_total.add_css_class("overview-card");
-    m_card_total.set_spacing(s.px(4));
-    m_lbl_total_title.set_markup("<span size='" + s.pt_str(12) + "' weight='bold' foreground='#94a3b8'>GESAMTPREIS</span>");
-    m_lbl_total_title.set_halign(Gtk::Align::START);
+    m_card_total.set_spacing(s.px(6));
+    m_lbl_total_title.set_markup("<span size='" + s.pt_str(15) + "' weight='bold' foreground='#94a3b8'>GESAMTPREIS</span>");
+    m_lbl_total_title.set_halign(Gtk::Align::CENTER);
     m_card_total.append(m_lbl_total_title);
 
-    m_lbl_total_value.set_halign(Gtk::Align::START);
+    m_lbl_total_value.set_halign(Gtk::Align::CENTER);
     m_card_total.append(m_lbl_total_value);
 
-    m_lbl_total_count.set_halign(Gtk::Align::START);
+    m_lbl_total_count.set_halign(Gtk::Align::CENTER);
     m_card_total.append(m_lbl_total_count);
     m_right_panel.append(m_card_total);
 
     // 2. Karte: Erhaltener Betrag (Tippen öffnet Eingabedialog)
     m_card_received.add_css_class("overview-card");
-    m_card_received.set_spacing(s.px(4));
-    m_lbl_received_title.set_markup("<span size='" + s.pt_str(12) + "' weight='bold' foreground='#94a3b8'>ERHALTENER BETRAG (Tippen)</span>");
-    m_lbl_received_title.set_halign(Gtk::Align::START);
+    m_card_received.set_spacing(s.px(6));
+    m_lbl_received_title.set_markup("<span size='" + s.pt_str(15) + "' weight='bold' foreground='#94a3b8'>ERHALTENER BETRAG</span>");
+    m_lbl_received_title.set_halign(Gtk::Align::CENTER);
     m_card_received.append(m_lbl_received_title);
 
     m_btn_received_amount.add_css_class("btn-received-amount");
+    m_lbl_received_value.set_halign(Gtk::Align::CENTER);
     m_btn_received_amount.set_child(m_lbl_received_value);
     m_btn_received_amount.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_received_amount_clicked));
     m_card_received.append(m_btn_received_amount);
@@ -99,12 +100,12 @@ void MainWindow::setup_ui()
 
     // 3. Karte: Rückgeld
     m_card_change.add_css_class("overview-card");
-    m_card_change.set_spacing(s.px(4));
-    m_lbl_change_title.set_markup("<span size='" + s.pt_str(12) + "' weight='bold' foreground='#94a3b8'>RÜCKGELD</span>");
-    m_lbl_change_title.set_halign(Gtk::Align::START);
+    m_card_change.set_spacing(s.px(6));
+    m_lbl_change_title.set_markup("<span size='" + s.pt_str(15) + "' weight='bold' foreground='#94a3b8'>RÜCKGELD</span>");
+    m_lbl_change_title.set_halign(Gtk::Align::CENTER);
     m_card_change.append(m_lbl_change_title);
 
-    m_lbl_change_value.set_halign(Gtk::Align::START);
+    m_lbl_change_value.set_halign(Gtk::Align::CENTER);
     m_card_change.append(m_lbl_change_value);
     m_right_panel.append(m_card_change);
 
@@ -252,13 +253,8 @@ void MainWindow::load_articles()
         auto btn = std::make_unique<ArticleButton>(cfg.name, cfg.price, cfg.color);
         btn->set_visible(cfg.visible);
 
-        // Klick auf Artikel aktualisiert die Gesamtübersicht
+        // Betätigung von + oder - aktualisiert die Kassenübersicht
         btn->signal_clicked().connect([this]() {
-            update_overview();
-        });
-
-        // Langer Druck (>3s) setzt Artikel auf 0 zurück und aktualisiert die Gesamtübersicht
-        btn->signal_long_pressed().connect([this]() {
             update_overview();
         });
 
@@ -278,42 +274,42 @@ void MainWindow::update_overview()
         m_total_items += btn->get_amount();
     }
 
-    // 1. Gesamtpreis-Anzeige (proportional skalierte Schrift)
+    // 1. Gesamtpreis-Anzeige (einheitlich 38pt)
     const std::string total_str = ArticleButton::format_currency(m_total_price).raw();
     m_lbl_total_value.set_markup(
-        "<span size='" + s.pt_str(32) + "' weight='bold' foreground='#ffffff'>" + total_str + "</span>"
+        "<span size='" + s.pt_str(38) + "' weight='bold' foreground='#ffffff'>" + total_str + "</span>"
     );
 
     const std::string count_str = "(" + std::to_string(m_total_items) + " Artikel ausgewählt)";
     m_lbl_total_count.set_markup(
-        "<span size='" + s.pt_str(13) + "' foreground='#94a3b8'>" + count_str + "</span>"
+        "<span size='" + s.pt_str(14) + "' foreground='#94a3b8'>" + count_str + "</span>"
     );
 
-    // 2. Erhaltener Betrag Anzeige (proportional skalierte Schrift)
+    // 2. Erhaltener Betrag Anzeige (einheitlich 38pt)
     const std::string received_str = ArticleButton::format_currency(m_received_amount).raw();
     m_lbl_received_value.set_markup(
-        "<span size='" + s.pt_str(28) + "' weight='bold' foreground='#38bdf8'>" + received_str + "</span>"
+        "<span size='" + s.pt_str(38) + "' weight='bold' foreground='#38bdf8'>" + received_str + "</span>"
     );
 
     const long total_cents = std::lround(m_total_price * 100.0);
     const long received_cents = std::lround(m_received_amount * 100.0);
 
-    // 3. Rückgeld-Anzeige (proportional skalierte Schrift)
+    // 3. Rückgeld-Anzeige (einheitlich 38pt)
     if (received_cents <= 0 && total_cents <= 0) {
         m_lbl_change_value.set_markup(
-            "<span size='" + s.pt_str(32) + "' weight='bold' foreground='#94a3b8'>0,00 €</span>"
+            "<span size='" + s.pt_str(38) + "' weight='bold' foreground='#94a3b8'>0,00 €</span>"
         );
     } else if (received_cents >= total_cents) {
         const double change = (received_cents - total_cents) / 100.0;
         const std::string change_str = ArticleButton::format_currency(change).raw();
         m_lbl_change_value.set_markup(
-            "<span size='" + s.pt_str(32) + "' weight='bold' foreground='#22c55e'>+ " + change_str + "</span>"
+            "<span size='" + s.pt_str(38) + "' weight='bold' foreground='#22c55e'>+ " + change_str + "</span>"
         );
     } else {
         const double missing = (total_cents - received_cents) / 100.0;
         const std::string missing_str = ArticleButton::format_currency(missing).raw();
         m_lbl_change_value.set_markup(
-            "<span size='" + s.pt_str(26) + "' weight='bold' foreground='#ef4444'>Noch: " + missing_str + "</span>"
+            "<span size='" + s.pt_str(38) + "' weight='bold' foreground='#ef4444'>Noch: " + missing_str + "</span>"
         );
     }
 
