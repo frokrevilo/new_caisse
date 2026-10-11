@@ -1,6 +1,7 @@
 #include "main_window.hpp"
 #include "scale_helper.hpp"
 #include "sales_logger.hpp"
+#include "article_config.hpp"
 #include <gdk/gdkkeysyms.h>
 #include <gtkmm/eventcontrollerkey.h>
 #include <cmath>

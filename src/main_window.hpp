@@ -1,7 +1,6 @@
 #pragma once
 
 #include "article_button.hpp"
-#include "article_config.hpp"
 #include "cash_input_dialog.hpp"
 #include <gtkmm/window.h>
 #include <gtkmm/grid.h>

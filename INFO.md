@@ -127,9 +127,9 @@ Custom tile component widget inheriting from `Gtk::Box`:
 - **Filename convention:** `yyyy-mm-dd_overview_sales.csv` (e.g. `2026-10-11_overview_sales.csv`).
 - **Delimiter:** Semicolon (`;`).
 - **Header:** Automatically generated if file does not exist or is empty:
-  `time;article_name_1;...;article_name_20;total`
+  `time;article_name_1;...;article_name_20;total;received`
 - **Data Rows:**
-  `HH:MM:SS;count_1;...;count_20;total_price` (Total formatted with comma, e.g. `22,35`).
+  `HH:MM:SS;count_1;...;count_20;total_price;received_price` (Amounts formatted with comma, e.g. `22,35;30,00`).
 
 ---
 
@@ -163,3 +163,42 @@ make        # Compile and link
 make run    # Run application
 make clean  # Clean build artifacts
 ```
+
+---
+
+## 6. Developer Guide: How to Extend the Application
+
+The codebase is intentionally modular, self-contained, and has minimal external dependencies to make future extensions straightforward:
+
+### 6.1 Adding New Article Fields (e.g. Barcode, Tax Rate, Category)
+1. In [`src/article_config.hpp`](file:///home/oliver/Development/c++/gtk/caisse/src/article_config.hpp): Add the field to `struct ArticleConfig`.
+2. In [`src/article_config.cpp`](file:///home/oliver/Development/c++/gtk/caisse/src/article_config.cpp): In `load_articles_from_yaml()`, add an `else if (key == "...")` branch to parse your new YAML key.
+3. In [`articles.yaml`](file:///home/oliver/Development/c++/gtk/caisse/articles.yaml): Specify the value in each article's block.
+
+### 6.2 Adding Alternative Payment Methods (e.g. Card Payment, Voucher)
+1. In [`src/main_window.hpp`](file:///home/oliver/Development/c++/gtk/caisse/src/main_window.hpp): Add a button `m_btn_card` to `m_right_panel`.
+2. In [`src/main_window.cpp`](file:///home/oliver/Development/c++/gtk/caisse/src/main_window.cpp):
+   - In `setup_ui()`: Style and attach the button.
+   - Connect clicked signal:
+     ```cpp
+     m_btn_card.signal_clicked().connect([this]() {
+         if (m_total_price <= 0.0) return;
+         // Log sale and reset
+         SalesLogger::log_sale(m_article_buttons, m_total_price);
+         reset_sale();
+     });
+     ```
+
+### 6.3 Extending Sales Logging (e.g. Payment Method, Receipt Printing)
+- [`SalesLogger`](file:///home/oliver/Development/c++/gtk/caisse/src/sales_logger.hpp) has no GUI dependencies; it accepts a vector of `(name, quantity)` pairs and `total_price`.
+- To record payment method, add a `payment_type` string parameter to `SalesLogger::log_sale()`.
+- To generate receipts, add a `print_receipt()` method in `SalesLogger` or a separate `ReceiptPrinter` helper.
+
+### 6.4 Screen Scaling & Touch Ergonomics
+- Always wrap sizes, paddings, and font sizes with [`ScaleHelper::instance()`](file:///home/oliver/Development/c++/gtk/caisse/src/scale_helper.hpp):
+  - `s.px(10)` for pixel dimensions.
+  - `s.pt_str(18)` for Pango markup font sizes (`<span size='...'>`).
+- Screen resolution can be tested or forced at runtime via environment variables:
+  - `CAISSE_RES=1920x1080 ./caisse`
+  - `CAISSE_SCALE=1.25 ./caisse`
+
